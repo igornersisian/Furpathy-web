@@ -1,0 +1,71 @@
+{
+  "site": {
+    "name": "Furpathy",
+    "tagline": "Warme, ehrliche Geschichten über das Leben mit Hund und Katze."
+  },
+  "nav": {
+    "home": "Start",
+    "articles": "Artikel",
+    "about": "Über uns"
+  },
+  "home": {
+    "latest": "Neueste Geschichten",
+    "seeAll": "Alle Artikel ansehen"
+  },
+  "article": {
+    "readOnMedium": "Auf Medium lesen",
+    "continueReading": "Weiterlesen",
+    "onlyInEnglish": "Nur auf Englisch",
+    "minRead": "{minutes} Min. Lesezeit",
+    "published": "Veröffentlicht am {date}",
+    "toc": "In diesem Artikel"
+  },
+  "list": {
+    "title": "Alle Artikel",
+    "empty": "Noch keine Artikel.",
+    "emptyCta": "Alle Artikel ansehen",
+    "byTag": "Tag „{tag}“",
+    "all": "Alle",
+    "filterByTag": "Nach Tag filtern",
+    "searchPlaceholder": "Artikel nach Titel suchen…",
+    "searchLabel": "Artikel suchen",
+    "searchNoResults": "Keine Artikel passen zu „{query}“.",
+    "clearTag": "Tag-Filter entfernen"
+  },
+  "about": {
+    "title": "Über Furpathy",
+    "body": "Furpathy ist eine kleine Publikation über den Alltag mit Hunden und Katzen. Wir schreiben ausführliche, gut recherchierte Artikel in vier Sprachen, damit überall verlässliche Antworten gefunden werden können."
+  },
+  "footer": {
+    "rights": "© {year} Furpathy. Alle Rechte vorbehalten.",
+    "language": "Sprache",
+    "theme": "Design"
+  },
+  "theme": {
+    "toggle": "Design wechseln",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert nicht oder wurde verschoben.",
+    "backHome": "Zurück zur Startseite",
+    "browseArticles": "Artikel durchsuchen"
+  },
+  "error": {
+    "title": "Etwas ist schiefgelaufen",
+    "description": "Diese Seite konnte nicht geladen werden. Bitte versuche es erneut.",
+    "retry": "Erneut versuchen"
+  },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen"
+  },
+  "share": {
+    "label": "Artikel teilen",
+    "copyLink": "Link kopieren",
+    "copied": "Kopiert!",
+    "twitter": "Auf X teilen",
+    "linkedin": "Auf LinkedIn teilen"
+  }
+}

@@ -1,26 +1,86 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbf7f1;
+  --foreground: #1e1b18;
+  --muted: #6b6560;
+  --surface: #ffffff;
+  --border: #e9e1d4;
+  --accent: #e87a3e;
+  --accent-contrast: #ffffff;
+  --accent-soft: #f7d9c4;
+  --accent-2: #6fa67a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #14110f;
+    --foreground: #f2ece3;
+    --muted: #a39a90;
+    --surface: #1c1815;
+    --border: #2e2722;
+    --accent: #f08c55;
+    --accent-contrast: #1a1410;
+    --accent-soft: #3a2418;
+    --accent-2: #8fc09a;
+  }
+}
+
+.dark {
+  --background: #14110f;
+  --foreground: #f2ece3;
+  --muted: #a39a90;
+  --surface: #1c1815;
+  --border: #2e2722;
+  --accent: #f08c55;
+  --accent-contrast: #1a1410;
+  --accent-soft: #3a2418;
+  --accent-2: #8fc09a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-2: var(--accent-2);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--foreground);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "ss01", "ss02";
+}
+
+/* Drop cap on first paragraph of article prose */
+.prose-article > p:first-of-type::first-letter {
+  font-family: var(--font-display);
+  font-size: 3.6em;
+  line-height: 0.9;
+  float: left;
+  padding: 0.1em 0.12em 0 0;
+  color: var(--accent);
+  font-weight: 600;
 }

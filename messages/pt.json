@@ -1,0 +1,71 @@
+{
+  "site": {
+    "name": "Furpathy",
+    "tagline": "Histórias calorosas e honestas sobre a vida com cães e gatos."
+  },
+  "nav": {
+    "home": "Início",
+    "articles": "Artigos",
+    "about": "Sobre"
+  },
+  "home": {
+    "latest": "Últimas histórias",
+    "seeAll": "Ver todos os artigos"
+  },
+  "article": {
+    "readOnMedium": "Ler no Medium",
+    "continueReading": "Continue lendo",
+    "onlyInEnglish": "Apenas em inglês",
+    "minRead": "{minutes} min de leitura",
+    "published": "Publicado em {date}",
+    "toc": "Neste artigo"
+  },
+  "list": {
+    "title": "Todos os artigos",
+    "empty": "Ainda não há artigos.",
+    "emptyCta": "Ver todos os artigos",
+    "byTag": "Marcado com “{tag}”",
+    "all": "Todos",
+    "filterByTag": "Filtrar por tag",
+    "searchPlaceholder": "Buscar artigos por título…",
+    "searchLabel": "Buscar artigos",
+    "searchNoResults": "Nenhum artigo corresponde a “{query}”.",
+    "clearTag": "Remover filtro de tag"
+  },
+  "about": {
+    "title": "Sobre a Furpathy",
+    "body": "A Furpathy é uma pequena publicação sobre o dia a dia com cães e gatos. Escrevemos textos longos e bem pesquisados em quatro idiomas para que todos possam encontrar respostas confiáveis."
+  },
+  "footer": {
+    "rights": "© {year} Furpathy. Todos os direitos reservados.",
+    "language": "Idioma",
+    "theme": "Tema"
+  },
+  "theme": {
+    "toggle": "Alternar tema",
+    "light": "Claro",
+    "dark": "Escuro",
+    "system": "Sistema"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "A página que você procura não existe ou foi movida.",
+    "backHome": "Voltar para o início",
+    "browseArticles": "Ver artigos"
+  },
+  "error": {
+    "title": "Algo deu errado",
+    "description": "Não foi possível carregar esta página. Tente novamente.",
+    "retry": "Tentar novamente"
+  },
+  "a11y": {
+    "skipToContent": "Pular para o conteúdo"
+  },
+  "share": {
+    "label": "Compartilhar este artigo",
+    "copyLink": "Copiar link",
+    "copied": "Copiado!",
+    "twitter": "Compartilhar no X",
+    "linkedin": "Compartilhar no LinkedIn"
+  }
+}

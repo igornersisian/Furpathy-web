@@ -1,0 +1,71 @@
+{
+  "site": {
+    "name": "Furpathy",
+    "tagline": "Historias cálidas y honestas sobre la vida con perros y gatos."
+  },
+  "nav": {
+    "home": "Inicio",
+    "articles": "Artículos",
+    "about": "Nosotros"
+  },
+  "home": {
+    "latest": "Últimas historias",
+    "seeAll": "Ver todos los artículos"
+  },
+  "article": {
+    "readOnMedium": "Leer en Medium",
+    "continueReading": "Sigue leyendo",
+    "onlyInEnglish": "Solo en inglés",
+    "minRead": "{minutes} min de lectura",
+    "published": "Publicado el {date}",
+    "toc": "En este artículo"
+  },
+  "list": {
+    "title": "Todos los artículos",
+    "empty": "Aún no hay artículos.",
+    "emptyCta": "Ver todos los artículos",
+    "byTag": "Etiqueta “{tag}”",
+    "all": "Todos",
+    "filterByTag": "Filtrar por etiqueta",
+    "searchPlaceholder": "Buscar artículos por título…",
+    "searchLabel": "Buscar artículos",
+    "searchNoResults": "Ningún artículo coincide con «{query}».",
+    "clearTag": "Quitar filtro de etiqueta"
+  },
+  "about": {
+    "title": "Sobre Furpathy",
+    "body": "Furpathy es una pequeña publicación sobre la vida cotidiana con perros y gatos. Escribimos artículos extensos y bien documentados en cuatro idiomas para que cualquiera pueda encontrar respuestas fiables."
+  },
+  "footer": {
+    "rights": "© {year} Furpathy. Todos los derechos reservados.",
+    "language": "Idioma",
+    "theme": "Tema"
+  },
+  "theme": {
+    "toggle": "Cambiar tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o se ha movido.",
+    "backHome": "Volver al inicio",
+    "browseArticles": "Ver artículos"
+  },
+  "error": {
+    "title": "Algo salió mal",
+    "description": "No pudimos cargar esta página. Inténtalo de nuevo.",
+    "retry": "Reintentar"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido"
+  },
+  "share": {
+    "label": "Compartir este artículo",
+    "copyLink": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "twitter": "Compartir en X",
+    "linkedin": "Compartir en LinkedIn"
+  }
+}

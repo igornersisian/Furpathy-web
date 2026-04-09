@@ -1,0 +1,71 @@
+{
+  "site": {
+    "name": "Furpathy",
+    "tagline": "Warm, honest writing about life with dogs and cats."
+  },
+  "nav": {
+    "home": "Home",
+    "articles": "Articles",
+    "about": "About"
+  },
+  "home": {
+    "latest": "Latest stories",
+    "seeAll": "See all articles"
+  },
+  "article": {
+    "readOnMedium": "Read on Medium",
+    "continueReading": "Continue reading",
+    "onlyInEnglish": "Only in English",
+    "minRead": "{minutes} min read",
+    "published": "Published {date}",
+    "toc": "In this article"
+  },
+  "list": {
+    "title": "All articles",
+    "empty": "No articles yet.",
+    "emptyCta": "Browse all articles",
+    "byTag": "Tagged “{tag}”",
+    "all": "All",
+    "filterByTag": "Filter by tag",
+    "searchPlaceholder": "Search articles by title…",
+    "searchLabel": "Search articles",
+    "searchNoResults": "No articles match “{query}”.",
+    "clearTag": "Clear tag filter"
+  },
+  "about": {
+    "title": "About Furpathy",
+    "body": "Furpathy is a small publication about the everyday realities of sharing life with dogs and cats. We write long-form, research-backed pieces in four languages so people everywhere can find trustworthy answers."
+  },
+  "footer": {
+    "rights": "© {year} Furpathy. All rights reserved.",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "theme": {
+    "toggle": "Toggle theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you’re looking for doesn’t exist or has moved.",
+    "backHome": "Back to home",
+    "browseArticles": "Browse articles"
+  },
+  "error": {
+    "title": "Something went wrong",
+    "description": "We couldn’t load this page. Please try again.",
+    "retry": "Try again"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  },
+  "share": {
+    "label": "Share this article",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "twitter": "Share on X",
+    "linkedin": "Share on LinkedIn"
+  }
+}
