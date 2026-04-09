@@ -87,6 +87,11 @@ export default async function LocaleLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: themeScript }}
         />
+        <Script
+          src="https://umami.deploybox.space/script.js"
+          data-website-id="fe0720dc-8fc1-43a3-916d-2fd0f79d911a"
+          strategy="afterInteractive"
+        />
         <NextIntlClientProvider>
           <a
             href="#main"
