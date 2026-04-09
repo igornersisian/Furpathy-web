@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getAllPublished } from "@/lib/articles";
 import { ArticleGrid } from "@/components/article-grid";

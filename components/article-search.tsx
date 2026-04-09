@@ -25,7 +25,8 @@ export function ArticleSearch({ locale }: { locale: string }) {
         card.setAttribute("data-hidden-by-search", "true");
       }
     });
-    setNoResults(q !== "" && visible === 0);
+    const empty = q !== "" && visible === 0;
+    queueMicrotask(() => setNoResults(empty));
   }, [query, locale]);
 
   return (
