@@ -14,7 +14,10 @@ export async function ArticleCard({
   locale: Locale;
 }) {
   const t = await getTranslations("article");
-  const href = `/${locale}/articles/${article.slug}`;
+  // Fallback (English-only) articles should link to the EN version
+  const href = article.isFallback
+    ? `/en/articles/${article.slug}`
+    : `/${locale}/articles/${article.slug}`;
   const searchText = `${article.title} ${article.description ?? ""}`
     .toLocaleLowerCase(locale)
     .trim();
@@ -58,8 +61,8 @@ export async function ArticleCard({
           <p className="line-clamp-3 text-sm text-[color:var(--muted)]">{article.description}</p>
         )}
         <div className="mt-auto flex items-center gap-3 text-xs text-[color:var(--muted)]">
-          <time dateTime={article.publishedAt ?? article.createdAt}>
-            {formatDate(article.publishedAt ?? article.createdAt, locale)}
+          <time dateTime={article.createdAt}>
+            {formatDate(article.createdAt, locale)}
           </time>
           <span aria-hidden>•</span>
           <span>{t("minRead", { minutes: article.readingTimeMin })}</span>

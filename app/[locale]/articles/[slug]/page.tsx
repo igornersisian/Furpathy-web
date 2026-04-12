@@ -54,14 +54,19 @@ export async function generateMetadata({
   for (const t of translations) {
     languages[t.locale] = `${SITE_URL}/${t.locale}/articles/${t.slug}`;
   }
-  languages["x-default"] = `${SITE_URL}/en/articles/${
-    translations.find((t) => t.locale === "en")?.slug ?? slug
-  }`;
+  const enTr = translations.find((t) => t.locale === "en");
+  if (enTr) {
+    languages["x-default"] = `${SITE_URL}/en/articles/${enTr.slug}`;
+  }
 
-  const canonical = `${SITE_URL}/${locale}/articles/${article.slug}`;
+  // Fallback articles (no translation for this locale) should canonical to EN
+  const canonical = article.isFallback && enTr
+    ? `${SITE_URL}/en/articles/${enTr.slug}`
+    : `${SITE_URL}/${locale}/articles/${article.slug}`;
   return {
     title: article.title,
     description: article.description,
+    ...(article.isFallback && { robots: { index: false, follow: true } }),
     alternates: { canonical, languages },
     openGraph: {
       type: "article",
@@ -69,7 +74,7 @@ export async function generateMetadata({
       description: article.description,
       url: canonical,
       images: article.image ? [{ url: article.image }] : undefined,
-      publishedTime: article.publishedAt ?? article.createdAt,
+      publishedTime: article.createdAt,
     },
     twitter: {
       card: "summary_large_image",
@@ -104,7 +109,7 @@ export default async function ArticlePage({
     headline: article.title,
     description: article.description,
     image: article.image ? [article.image] : undefined,
-    datePublished: article.publishedAt ?? article.createdAt,
+    datePublished: article.createdAt,
     inLanguage: article.isFallback ? "en" : locale,
     mainEntityOfPage: `${SITE_URL}/${locale}/articles/${article.slug}`,
     author: { "@type": "Organization", name: "Furpathy" },
@@ -146,9 +151,9 @@ export default async function ArticlePage({
           {article.title}
         </h1>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3 text-sm text-[color:var(--muted)]">
-          <time dateTime={article.publishedAt ?? article.createdAt}>
+          <time dateTime={article.createdAt}>
             {t("published", {
-              date: formatDate(article.publishedAt ?? article.createdAt, locale),
+              date: formatDate(article.createdAt, locale),
             })}
           </time>
           <span aria-hidden>•</span>

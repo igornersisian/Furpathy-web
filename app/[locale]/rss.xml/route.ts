@@ -24,7 +24,11 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
   const locale = rawLocale as Locale;
-  const articles = await getLatest(locale, 30);
+  const allArticles = await getLatest(locale, 30);
+  // Exclude fallback (English-only) articles from non-EN feeds
+  const articles = locale === "en"
+    ? allArticles
+    : allArticles.filter((a) => !a.isFallback);
   const items = articles
     .map((a) => {
       const url = `${SITE_URL}/${locale}/articles/${a.slug}`;
@@ -32,7 +36,7 @@ export async function GET(
       <title>${escape(a.title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${new Date(a.publishedAt ?? a.createdAt).toUTCString()}</pubDate>
+      <pubDate>${new Date(a.createdAt).toUTCString()}</pubDate>
       <description>${escape(a.description ?? "")}</description>
     </item>`;
     })
