@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getAllPublished } from "@/lib/articles";
 import { ArticleGrid } from "@/components/article-grid";
 import { ArticleSearch } from "@/components/article-search";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { Locale } from "@/i18n/routing";
 
 export const revalidate = 600;
@@ -20,10 +21,14 @@ export default async function ArticlesListPage({
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 py-12 md:py-16">
-      <h1 className="font-display mb-8 text-4xl font-semibold md:text-5xl">
-        {t("list.title")}
-      </h1>
-      <ArticleSearch locale={locale} />
+      <ScrollReveal>
+        <h1 className="font-display mb-8 text-4xl font-semibold md:text-5xl">
+          <span className="gradient-text">{t("list.title")}</span>
+        </h1>
+      </ScrollReveal>
+      <ScrollReveal delay={100}>
+        <ArticleSearch locale={locale} />
+      </ScrollReveal>
       {all.length === 0 ? (
         <p className="text-[color:var(--muted)]">{t("list.empty")}</p>
       ) : (

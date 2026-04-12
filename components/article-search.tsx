@@ -59,13 +59,29 @@ export function ArticleSearch({ locale }: { locale: string }) {
         />
       </div>
       {noResults && (
-        <p
+        <div
           ref={emptyRef}
           role="status"
-          className="mt-4 text-sm text-[color:var(--muted)]"
+          className="mt-8 flex flex-col items-center gap-3 text-center"
         >
-          {t("searchNoResults", { query })}
-        </p>
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="text-[color:var(--border)]"
+            aria-hidden="true"
+          >
+            <ellipse cx="7" cy="5.5" rx="2.2" ry="2.8" />
+            <ellipse cx="17" cy="5.5" rx="2.2" ry="2.8" />
+            <ellipse cx="3.5" cy="11" rx="2" ry="2.5" />
+            <ellipse cx="20.5" cy="11" rx="2" ry="2.5" />
+            <path d="M12 22c-4.5 0-7-3-7-5.5S7.5 11 12 11s7 3 7 5.5S16.5 22 12 22z" />
+          </svg>
+          <p className="text-sm text-[color:var(--muted)]">
+            {t("searchNoResults", { query })}
+          </p>
+        </div>
       )}
     </div>
   );

@@ -15,6 +15,8 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { ReadingProgress } from "@/components/reading-progress";
 import { ShareButtons } from "@/components/share-buttons";
 import { ArticleToc } from "@/components/article-toc";
+import { ScrollReveal } from "@/components/scroll-reveal";
+import { PawDivider } from "@/components/paw-divider";
 import { extractToc } from "@/lib/toc";
 import { formatDate } from "@/lib/format";
 import type { Locale } from "@/i18n/routing";
@@ -199,9 +201,14 @@ export default async function ArticlePage({
 
       {related.length > 0 && (
         <section className="mx-auto mt-20 w-full max-w-[1200px] px-5">
-          <h2 className="font-display mb-6 text-2xl font-semibold md:text-3xl">
-            {t("continueReading")}
-          </h2>
+          <ScrollReveal>
+            <PawDivider className="mb-10" />
+          </ScrollReveal>
+          <ScrollReveal delay={100}>
+            <h2 className="font-display mb-6 text-2xl font-semibold md:text-3xl">
+              <span className="gradient-text">{t("continueReading")}</span>
+            </h2>
+          </ScrollReveal>
           <ArticleGrid articles={related} locale={locale} />
         </section>
       )}

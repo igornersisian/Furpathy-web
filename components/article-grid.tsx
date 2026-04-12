@@ -1,6 +1,7 @@
 import type { ArticleCard as ArticleCardT } from "@/lib/types";
 import type { Locale } from "@/i18n/routing";
 import { ArticleCard } from "./article-card";
+import { ScrollReveal } from "./scroll-reveal";
 
 export function ArticleGrid({
   articles,
@@ -12,8 +13,10 @@ export function ArticleGrid({
   if (articles.length === 0) return null;
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {articles.map((a) => (
-        <ArticleCard key={a.id} article={a} locale={locale} />
+      {articles.map((a, i) => (
+        <ScrollReveal key={a.id} delay={i * 60}>
+          <ArticleCard article={a} locale={locale} />
+        </ScrollReveal>
       ))}
     </div>
   );

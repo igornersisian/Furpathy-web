@@ -103,3 +103,95 @@ body {
   color: var(--accent);
   font-weight: 600;
 }
+
+/* ── Scroll reveal ─────────────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Gradient text accent ──────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent), #e05590);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.dark .gradient-text {
+  background: linear-gradient(135deg, var(--accent), #f0a0c0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── Reading progress bar glow ─────────────────────── */
+.reading-bar {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 8px var(--accent), 0 0 2px var(--accent);
+}
+
+/* ── Paw print divider ─────────────────────────────── */
+.paw-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--border);
+}
+.paw-divider::before,
+.paw-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Card wiggle on hover ──────────────────────────── */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg) translateY(-2px); }
+  25% { transform: rotate(-0.5deg) translateY(-2px); }
+  75% { transform: rotate(0.5deg) translateY(-2px); }
+}
+.card-hover:hover {
+  animation: wiggle 0.4s ease-in-out;
+}
+
+/* ── Skeleton pulse ────────────────────────────────── */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--border) 0%, var(--accent-soft) 50%, var(--border) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── 404 illustration float ────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ── Subtle hero parallax via scroll ───────────────── */
+.parallax-hero {
+  overflow: hidden;
+}
+.parallax-hero img {
+  transition: transform 0.1s linear;
+}

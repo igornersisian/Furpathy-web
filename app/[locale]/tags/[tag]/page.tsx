@@ -2,6 +2,7 @@ import Link from "next/link";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { getByTag } from "@/lib/articles";
 import { ArticleGrid } from "@/components/article-grid";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import type { Locale } from "@/i18n/routing";
 
 export const revalidate = 600;
@@ -20,9 +21,11 @@ export default async function TagPage({
 
   return (
     <div className="mx-auto w-full max-w-[1200px] px-5 py-12 md:py-16">
-      <h1 className="font-display mb-4 text-4xl font-semibold md:text-5xl">
-        {t("list.byTag", { tag: decoded })}
-      </h1>
+      <ScrollReveal>
+        <h1 className="font-display mb-4 text-4xl font-semibold md:text-5xl">
+          <span className="gradient-text">{t("list.byTag", { tag: decoded })}</span>
+        </h1>
+      </ScrollReveal>
       <div className="mb-10">
         <Link
           href={`/${locale}/articles`}

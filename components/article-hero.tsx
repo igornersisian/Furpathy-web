@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import type { ArticleCard as ArticleCardT } from "@/lib/types";
 import type { Locale } from "@/i18n/routing";
 import { TagChip } from "./tag-chip";
+import { HeroParallax } from "./hero-parallax";
 import { formatDate } from "@/lib/format";
 
 export async function ArticleHero({
@@ -24,18 +25,20 @@ export async function ArticleHero({
         href={href}
         className="relative block aspect-[16/10] overflow-hidden rounded-3xl md:col-span-3"
       >
-        {article.image ? (
-          <Image
-            src={article.image}
-            alt={article.title}
-            fill
-            priority
-            sizes="(min-width: 1024px) 720px, 100vw"
-            className="object-cover transition duration-700 hover:scale-[1.02]"
-          />
-        ) : (
-          <div className="h-full w-full bg-[color:var(--accent-soft)]" />
-        )}
+        <HeroParallax>
+          {article.image ? (
+            <Image
+              src={article.image}
+              alt={article.title}
+              fill
+              priority
+              sizes="(min-width: 1024px) 720px, 100vw"
+              className="object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[color:var(--accent-soft)]" />
+          )}
+        </HeroParallax>
       </Link>
       <div className="md:col-span-2">
         {article.tags.length > 0 && (
@@ -45,8 +48,8 @@ export async function ArticleHero({
             ))}
           </div>
         )}
-        <h1 className="font-display text-3xl font-semibold leading-tight text-[color:var(--foreground)] md:text-5xl">
-          <Link href={href} className="hover:text-[color:var(--accent)]">
+        <h1 className="font-display text-3xl font-semibold leading-tight md:text-5xl">
+          <Link href={href} className="gradient-text hover:opacity-80">
             {article.title}
           </Link>
         </h1>
