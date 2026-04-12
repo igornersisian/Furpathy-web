@@ -106,7 +106,8 @@ export async function getAllPublished(
     .range(from, to);
 
   if (opts.tag) {
-    q = q.contains("tags", [opts.tag]);
+    const tagCol = locale === "en" ? "tags" : `tags_${locale}`;
+    q = q.contains(tagCol, [opts.tag]);
   }
   const { data, error } = await q;
   if (error) fail("getAllPublished", error);

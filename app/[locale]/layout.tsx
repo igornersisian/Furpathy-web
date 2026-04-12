@@ -53,7 +53,10 @@ export async function generateMetadata({
     },
     alternates: {
       canonical: `/${locale}`,
-      languages: Object.fromEntries(routing.locales.map((l) => [l, `/${l}`])),
+      languages: {
+        ...Object.fromEntries(routing.locales.map((l) => [l, `/${l}`])),
+        "x-default": "/en",
+      },
     },
     openGraph: {
       type: "website",
