@@ -24,7 +24,7 @@ export async function ArticleCard({
   return (
     <article
       data-search-text={searchText}
-      className="group js-article-card card-hover flex flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] transition hover:shadow-lg data-[hidden-by-search=true]:hidden"
+      className="group js-article-card flex flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--surface)] transition hover:shadow-lg data-[hidden-by-search=true]:hidden"
     >
       <Link href={href} className="relative block aspect-[16/9] overflow-hidden">
         {article.image ? (

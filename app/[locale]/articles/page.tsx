@@ -23,7 +23,7 @@ export default async function ArticlesListPage({
     <div className="mx-auto w-full max-w-[1200px] px-5 py-12 md:py-16">
       <ScrollReveal>
         <h1 className="font-display mb-8 text-4xl font-semibold md:text-5xl">
-          <span className="gradient-text">{t("list.title")}</span>
+          {t("list.title")}
         </h1>
       </ScrollReveal>
       <ScrollReveal delay={100}>

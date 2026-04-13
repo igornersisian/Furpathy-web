@@ -49,7 +49,7 @@ export async function ArticleHero({
           </div>
         )}
         <h1 className="font-display text-3xl font-semibold leading-tight md:text-5xl">
-          <Link href={href} className="gradient-text hover:opacity-80">
+          <Link href={href} className="hover:opacity-80">
             {article.title}
           </Link>
         </h1>

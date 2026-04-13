@@ -35,7 +35,7 @@ export default async function HomePage({
           <ScrollReveal delay={150}>
             <div className="flex items-end justify-between gap-4">
               <h2 className="font-display text-2xl font-semibold md:text-3xl">
-                <span className="gradient-text">{t("home.latest")}</span>
+                {t("home.latest")}
               </h2>
               <Link
                 href={`/${locale}/articles`}

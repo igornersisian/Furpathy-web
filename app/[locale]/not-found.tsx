@@ -69,7 +69,7 @@ export default async function LocaleNotFound() {
       </div>
       <p className="font-mono text-sm uppercase tracking-widest text-[color:var(--muted)]">404</p>
       <h1 className="font-display text-4xl font-semibold md:text-5xl">
-        <span className="gradient-text">{t("title")}</span>
+        {t("title")}
       </h1>
       <p className="text-lg leading-relaxed text-[color:var(--muted)]">{t("description")}</p>
       <div className="mt-2 flex flex-wrap justify-center gap-3">

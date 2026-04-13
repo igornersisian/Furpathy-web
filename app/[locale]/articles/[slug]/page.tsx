@@ -206,7 +206,7 @@ export default async function ArticlePage({
           </ScrollReveal>
           <ScrollReveal delay={100}>
             <h2 className="font-display mb-6 text-2xl font-semibold md:text-3xl">
-              <span className="gradient-text">{t("continueReading")}</span>
+              {t("continueReading")}
             </h2>
           </ScrollReveal>
           <ArticleGrid articles={related} locale={locale} />

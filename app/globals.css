@@ -13,6 +13,9 @@
   --accent-contrast: #ffffff;
   --accent-soft: #f7d9c4;
   --accent-2: #6fa67a;
+  --blob-1: rgba(232, 122, 62, 0.06);
+  --blob-2: rgba(111, 166, 122, 0.05);
+  --blob-3: rgba(224, 85, 144, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,6 +29,9 @@
     --accent-contrast: #1a1410;
     --accent-soft: #3a2418;
     --accent-2: #8fc09a;
+    --blob-1: rgba(240, 140, 85, 0.04);
+    --blob-2: rgba(143, 192, 154, 0.035);
+    --blob-3: rgba(200, 100, 160, 0.03);
   }
 }
 
@@ -39,6 +45,9 @@
   --accent-contrast: #1a1410;
   --accent-soft: #3a2418;
   --accent-2: #8fc09a;
+  --blob-1: rgba(240, 140, 85, 0.04);
+  --blob-2: rgba(143, 192, 154, 0.035);
+  --blob-3: rgba(200, 100, 160, 0.03);
 }
 
 @theme inline {
@@ -83,6 +92,20 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* ── Soft organic background blobs ────────────────── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 600px 500px at 0% 0%, var(--blob-1) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 600px at 100% 20%, var(--blob-2) 0%, transparent 70%),
+    radial-gradient(ellipse 700px 400px at 30% 80%, var(--blob-3) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 500px at 90% 90%, var(--blob-1) 0%, transparent 70%);
+}
+
 ::selection {
   background: var(--accent-soft);
   color: var(--foreground);
@@ -118,19 +141,6 @@ body {
   transform: translateY(0);
 }
 
-/* ── Gradient text accent ──────────────────────────── */
-.gradient-text {
-  background: linear-gradient(135deg, var(--accent), #e05590);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.dark .gradient-text {
-  background: linear-gradient(135deg, var(--accent), #f0a0c0);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
 
 /* ── Reading progress bar glow ─────────────────────── */
 .reading-bar {
@@ -153,15 +163,6 @@ body {
   background: var(--border);
 }
 
-/* ── Card wiggle on hover ──────────────────────────── */
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg) translateY(-2px); }
-  25% { transform: rotate(-0.5deg) translateY(-2px); }
-  75% { transform: rotate(0.5deg) translateY(-2px); }
-}
-.card-hover:hover {
-  animation: wiggle 0.4s ease-in-out;
-}
 
 /* ── Skeleton pulse ────────────────────────────────── */
 @keyframes skeleton-pulse {
