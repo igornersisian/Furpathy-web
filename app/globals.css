@@ -13,9 +13,9 @@
   --accent-contrast: #ffffff;
   --accent-soft: #f7d9c4;
   --accent-2: #6fa67a;
-  --blob-1: rgba(232, 122, 62, 0.06);
-  --blob-2: rgba(111, 166, 122, 0.05);
-  --blob-3: rgba(224, 85, 144, 0.04);
+  --blob-1: rgba(232, 122, 62, 0.15);
+  --blob-2: rgba(111, 166, 122, 0.12);
+  --blob-3: rgba(224, 85, 144, 0.10);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -29,9 +29,9 @@
     --accent-contrast: #1a1410;
     --accent-soft: #3a2418;
     --accent-2: #8fc09a;
-    --blob-1: rgba(240, 140, 85, 0.04);
-    --blob-2: rgba(143, 192, 154, 0.035);
-    --blob-3: rgba(200, 100, 160, 0.03);
+    --blob-1: rgba(240, 140, 85, 0.10);
+    --blob-2: rgba(143, 192, 154, 0.08);
+    --blob-3: rgba(200, 100, 160, 0.07);
   }
 }
 

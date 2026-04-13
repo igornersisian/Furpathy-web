@@ -84,7 +84,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
-      <body className="min-h-screen bg-[color:var(--background)] font-sans text-[color:var(--foreground)] antialiased">
+      <body className="min-h-screen font-sans text-[color:var(--foreground)] antialiased">
         <Script
           id="theme-init"
           strategy="beforeInteractive"
