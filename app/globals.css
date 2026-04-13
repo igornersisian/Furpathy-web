@@ -83,27 +83,22 @@
   --tw-prose-links: var(--accent);
 }
 
-html,
-body {
+html {
   background: var(--background);
+}
+
+body {
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-}
-
-/* ── Soft organic background blobs ────────────────── */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
   background:
     radial-gradient(ellipse 600px 500px at 0% 0%, var(--blob-1) 0%, transparent 70%),
     radial-gradient(ellipse 500px 600px at 100% 20%, var(--blob-2) 0%, transparent 70%),
     radial-gradient(ellipse 700px 400px at 30% 80%, var(--blob-3) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 500px at 90% 90%, var(--blob-1) 0%, transparent 70%);
+    radial-gradient(ellipse 400px 500px at 90% 90%, var(--blob-1) 0%, transparent 70%),
+    var(--background);
+  background-attachment: fixed;
 }
 
 ::selection {
