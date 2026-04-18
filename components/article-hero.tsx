@@ -15,10 +15,7 @@ export async function ArticleHero({
   locale: Locale;
 }) {
   const t = await getTranslations("article");
-  // Fallback (English-only) articles should link to the EN version
-  const href = article.isFallback
-    ? `/en/articles/${article.slug}`
-    : `/${locale}/articles/${article.slug}`;
+  const href = `/${locale}/articles/${article.slug}`;
   return (
     <section className="grid gap-8 md:grid-cols-5 md:items-center">
       <Link
@@ -62,11 +59,6 @@ export async function ArticleHero({
           </time>
           <span aria-hidden>•</span>
           <span>{t("minRead", { minutes: article.readingTimeMin })}</span>
-          {article.isFallback && (
-            <span className="rounded-full bg-[color:var(--accent-soft)] px-2 py-0.5 text-xs font-medium text-[color:var(--accent)]">
-              {t("onlyInEnglish")}
-            </span>
-          )}
         </div>
       </div>
     </section>

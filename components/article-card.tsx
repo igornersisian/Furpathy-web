@@ -14,10 +14,7 @@ export async function ArticleCard({
   locale: Locale;
 }) {
   const t = await getTranslations("article");
-  // Fallback (English-only) articles should link to the EN version
-  const href = article.isFallback
-    ? `/en/articles/${article.slug}`
-    : `/${locale}/articles/${article.slug}`;
+  const href = `/${locale}/articles/${article.slug}`;
   const searchText = `${article.title} ${article.description ?? ""}`
     .toLocaleLowerCase(locale)
     .trim();
@@ -37,11 +34,6 @@ export async function ArticleCard({
           />
         ) : (
           <div className="h-full w-full bg-[color:var(--accent-soft)]" />
-        )}
-        {article.isFallback && (
-          <span className="absolute left-3 top-3 rounded-full bg-black/70 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white">
-            {t("onlyInEnglish")}
-          </span>
         )}
       </Link>
       <div className="flex flex-1 flex-col gap-3 p-5">

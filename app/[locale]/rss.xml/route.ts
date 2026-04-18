@@ -24,11 +24,7 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   }
   const locale = rawLocale as Locale;
-  const allArticles = await getLatest(locale, 30);
-  // Exclude fallback (English-only) articles from non-EN feeds
-  const articles = locale === "en"
-    ? allArticles
-    : allArticles.filter((a) => !a.isFallback);
+  const articles = await getLatest(locale, 30);
   const items = articles
     .map((a) => {
       const url = `${SITE_URL}/${locale}/articles/${a.slug}`;

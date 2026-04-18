@@ -16,28 +16,23 @@ function readTime(content: string): number {
   return Math.max(1, Math.round(readingTime(content).minutes));
 }
 
-export function mapRow(row: ArticleRow, locale: Locale): Article {
-  const enTitle = row.title ?? "Untitled";
-  const enSlug = row.slug;
-  const enDesc = row.meta_description ?? "";
-  const enTags = row.tags ?? [];
-  const enContent = row.content_en ?? "";
-
+export function mapRow(row: ArticleRow, locale: Locale): Article | null {
   if (locale === "en") {
+    if (!row.slug || !row.content_en) return null;
+    const content = row.content_en;
     return {
       id: row.id,
       locale,
-      slug: enSlug,
-      title: enTitle,
-      description: enDesc,
-      tags: enTags,
-      content: enContent,
+      slug: row.slug,
+      title: row.title ?? "Untitled",
+      description: row.meta_description ?? "",
+      tags: row.tags ?? [],
+      content,
       image: row.image_url,
       publishedAt: row.published_at,
       createdAt: row.created_at,
       mediumUrl: row.medium_url,
-      isFallback: false,
-      readingTimeMin: readTime(enContent),
+      readingTimeMin: readTime(content),
     };
   }
 
@@ -47,22 +42,21 @@ export function mapRow(row: ArticleRow, locale: Locale): Article {
   const tg = row[`tags_${locale}` as const];
   const c = row[`content_${locale}` as const];
 
-  const hasTranslation = Boolean(t && c);
+  if (!t || !s || !c) return null;
 
   return {
     id: row.id,
     locale,
-    slug: hasTranslation ? (s ?? enSlug) : enSlug,
-    title: hasTranslation ? (t as string) : enTitle,
-    description: hasTranslation ? (d ?? "") : enDesc,
-    tags: hasTranslation ? (tg ?? []) : enTags,
-    content: hasTranslation ? (c as string) : enContent,
+    slug: s,
+    title: t,
+    description: d ?? "",
+    tags: tg ?? [],
+    content: c,
     image: row.image_url,
     publishedAt: row.published_at,
     createdAt: row.created_at,
     mediumUrl: row.medium_url,
-    isFallback: !hasTranslation,
-    readingTimeMin: readTime(hasTranslation ? (c as string) : enContent),
+    readingTimeMin: readTime(c),
   };
 }
 
@@ -78,6 +72,15 @@ function toCard(a: Article): ArticleCard {
   return rest;
 }
 
+function mapRowsToCards(rows: ArticleRow[], locale: Locale): ArticleCard[] {
+  const out: ArticleCard[] = [];
+  for (const r of rows) {
+    const article = mapRow(r, locale);
+    if (article) out.push(toCard(article));
+  }
+  return out;
+}
+
 export async function getLatest(locale: Locale, limit = 12): Promise<ArticleCard[]> {
   const { data, error } = await supabase
     .from("articles")
@@ -86,7 +89,7 @@ export async function getLatest(locale: Locale, limit = 12): Promise<ArticleCard
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
   if (error) fail("getLatest", error);
-  return (data as ArticleRow[] | null ?? []).map((r) => toCard(mapRow(r, locale)));
+  return mapRowsToCards((data as ArticleRow[] | null) ?? [], locale);
 }
 
 export async function getAllPublished(
@@ -111,34 +114,48 @@ export async function getAllPublished(
   }
   const { data, error } = await q;
   if (error) fail("getAllPublished", error);
-  return (data as ArticleRow[] | null ?? []).map((r) => toCard(mapRow(r, locale)));
+  return mapRowsToCards((data as ArticleRow[] | null) ?? [], locale);
 }
 
 export async function getBySlug(locale: Locale, slug: string): Promise<Article | null> {
-  // Try localized slug first
-  if (locale !== "en") {
-    const { data, error } = await supabase
-      .from("articles")
-      .select(BASE_COLUMNS)
-      .in("status", ["published","queued"])
-      .eq(`slug_${locale}`, slug)
-      .limit(1);
-    if (error) fail("getBySlug", error);
-    if (data && data.length > 0) {
-      return mapRow(data[0] as ArticleRow, locale);
-    }
-  }
-
-  // Fallback: EN slug
+  const slugCol = locale === "en" ? "slug" : `slug_${locale}`;
   const { data, error } = await supabase
     .from("articles")
     .select(BASE_COLUMNS)
     .in("status", ["published","queued"])
-    .eq("slug", slug)
+    .eq(slugCol, slug)
     .limit(1);
   if (error) fail("getBySlug", error);
   if (!data || data.length === 0) return null;
   return mapRow(data[0] as ArticleRow, locale);
+}
+
+// Probe every per-locale slug column; returns the canonical (locale, slug) for
+// an article whose *any* translation has this slug. Used to 301-redirect when
+// someone hits /<wrong-locale>/articles/<slug>.
+export async function findArticleByAnySlug(
+  slug: string,
+): Promise<{ locale: Locale; slug: string } | null> {
+  const { data, error } = await supabase
+    .from("articles")
+    .select("slug, slug_es, slug_de, slug_pt, title, title_es, title_de, title_pt, content_en, content_es, content_de, content_pt")
+    .in("status", ["published","queued"])
+    .or(`slug.eq.${slug},slug_es.eq.${slug},slug_de.eq.${slug},slug_pt.eq.${slug}`)
+    .limit(1);
+  if (error) fail("findArticleByAnySlug", error);
+  if (!data || data.length === 0) return null;
+  const r = data[0];
+  if (r.slug === slug && r.title && r.content_en) return { locale: "en", slug };
+  for (const l of ["es", "de", "pt"] as const) {
+    const s = r[`slug_${l}` as "slug_es"] as string | null;
+    const t = r[`title_${l}` as "title_es"] as string | null;
+    const c = r[`content_${l}` as "content_es"] as string | null;
+    if (s === slug && t && c) return { locale: l, slug };
+  }
+  // Slug matched a column whose translation isn't actually published (e.g.
+  // slug_de set but title_de/content_de null). Fall back to EN if valid.
+  if (r.slug && r.title && r.content_en) return { locale: "en", slug: r.slug as string };
+  return null;
 }
 
 export async function getByTag(locale: Locale, tag: string): Promise<ArticleCard[]> {
@@ -181,7 +198,7 @@ export async function getRelated(
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit);
   if (error) fail("getRelated", error);
-  return (data as ArticleRow[] | null ?? []).map((r) => toCard(mapRow(r, locale)));
+  return mapRowsToCards((data as ArticleRow[] | null) ?? [], locale);
 }
 
 export async function getTranslationsFor(

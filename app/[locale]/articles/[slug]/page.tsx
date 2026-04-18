@@ -1,8 +1,9 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import {
+  findArticleByAnySlug,
   getAllSlugsForLocale,
   getBySlug,
   getRelated,
@@ -61,14 +62,10 @@ export async function generateMetadata({
     languages["x-default"] = `${SITE_URL}/en/articles/${enTr.slug}`;
   }
 
-  // Fallback articles (no translation for this locale) should canonical to EN
-  const canonical = article.isFallback && enTr
-    ? `${SITE_URL}/en/articles/${enTr.slug}`
-    : `${SITE_URL}/${locale}/articles/${article.slug}`;
+  const canonical = `${SITE_URL}/${locale}/articles/${article.slug}`;
   return {
     title: article.title,
     description: article.description,
-    ...(article.isFallback && { robots: { index: false, follow: true } }),
     alternates: { canonical, languages },
     openGraph: {
       type: "article",
@@ -98,7 +95,13 @@ export default async function ArticlePage({
   const t = await getTranslations("article");
 
   const article = await getBySlug(locale, slug);
-  if (!article) notFound();
+  if (!article) {
+    const probe = await findArticleByAnySlug(slug);
+    if (probe && (probe.locale !== locale || probe.slug !== slug)) {
+      permanentRedirect(`/${probe.locale}/articles/${probe.slug}`);
+    }
+    notFound();
+  }
 
   const [related, translations] = await Promise.all([
     getRelated(locale, article.id, article.tags, 3),
@@ -112,7 +115,7 @@ export default async function ArticlePage({
     description: article.description,
     image: article.image ? [article.image] : undefined,
     datePublished: article.createdAt,
-    inLanguage: article.isFallback ? "en" : locale,
+    inLanguage: locale,
     mainEntityOfPage: `${SITE_URL}/${locale}/articles/${article.slug}`,
     author: { "@type": "Organization", name: "Furpathy" },
     publisher: {
@@ -160,11 +163,6 @@ export default async function ArticlePage({
           </time>
           <span aria-hidden>•</span>
           <span>{t("minRead", { minutes: article.readingTimeMin })}</span>
-          {article.isFallback && (
-            <span className="rounded-full bg-[color:var(--accent-soft)] px-2 py-0.5 text-xs font-medium text-[color:var(--accent)]">
-              {t("onlyInEnglish")}
-            </span>
-          )}
         </div>
         <div className="mt-6 flex justify-center">
           <LanguageSwitcher currentLocale={locale} translations={translations} />

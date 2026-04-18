@@ -45,7 +45,6 @@ export type Article = {
   publishedAt: string | null;
   createdAt: string;
   mediumUrl: string | null;
-  isFallback: boolean;
   readingTimeMin: number;
 };
 
