@@ -2,7 +2,7 @@ import type { Locale } from "@/i18n/routing";
 
 export type ArticleRow = {
   id: string;
-  slug: string;
+  slug: string | null;
   title: string | null;
   meta_description: string | null;
   tags: string[] | null;

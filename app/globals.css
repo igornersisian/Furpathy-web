@@ -3,51 +3,50 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Paper Journal — Light (Paper) ───────────────────── */
 :root {
-  --background: #fbf7f1;
-  --foreground: #1e1b18;
-  --muted: #6b6560;
-  --surface: #ffffff;
-  --border: #e9e1d4;
-  --accent: #e87a3e;
-  --accent-contrast: #ffffff;
-  --accent-soft: #f7d9c4;
-  --accent-2: #6fa67a;
-  --blob-1: rgba(232, 122, 62, 0.15);
-  --blob-2: rgba(111, 166, 122, 0.12);
-  --blob-3: rgba(224, 85, 144, 0.10);
+  --background: #f4ecdc; /* warm cream page */
+  --paper: #fbf5e8; /* lighter paper — cards, hero panel */
+  --foreground: #231a14; /* deep sepia ink */
+  --muted: #6b5d4e; /* ink-soft — meta, mono labels */
+  --surface: #fbf5e8; /* alias of paper */
+  --border: #d9c8a8; /* rule — hairline dividers */
+  --accent: #c15a33; /* terracotta — links, emphasis */
+  --accent-contrast: #fbf5e8; /* paper on terra */
+  --accent-soft: #eccaae; /* terra-soft — chips, soft fills */
+  --accent-2: #8a7a3a; /* olive — secondary accent */
+  --stamp: #a23a1a; /* stamp red */
 }
 
+/* ── Paper Journal — Dark ────────────────────────────── */
 @media (prefers-color-scheme: dark) {
   :root:not(.light) {
-    --background: #14110f;
-    --foreground: #f2ece3;
-    --muted: #a39a90;
-    --surface: #1c1815;
-    --border: #2e2722;
-    --accent: #f08c55;
-    --accent-contrast: #1a1410;
-    --accent-soft: #3a2418;
-    --accent-2: #8fc09a;
-    --blob-1: rgba(240, 140, 85, 0.10);
-    --blob-2: rgba(143, 192, 154, 0.08);
-    --blob-3: rgba(200, 100, 160, 0.07);
+    --background: #1a140e;
+    --paper: #221a12;
+    --foreground: #f1e6d0;
+    --muted: #a99a82;
+    --surface: #221a12;
+    --border: #3a2d1e;
+    --accent: #e08854;
+    --accent-contrast: #1a140e;
+    --accent-soft: #3a2416;
+    --accent-2: #a89450;
+    --stamp: #e07050;
   }
 }
 
 .dark {
-  --background: #14110f;
-  --foreground: #f2ece3;
-  --muted: #a39a90;
-  --surface: #1c1815;
-  --border: #2e2722;
-  --accent: #f08c55;
-  --accent-contrast: #1a1410;
-  --accent-soft: #3a2418;
-  --accent-2: #8fc09a;
-  --blob-1: rgba(240, 140, 85, 0.04);
-  --blob-2: rgba(143, 192, 154, 0.035);
-  --blob-3: rgba(200, 100, 160, 0.03);
+  --background: #1a140e;
+  --paper: #221a12;
+  --foreground: #f1e6d0;
+  --muted: #a99a82;
+  --surface: #221a12;
+  --border: #3a2d1e;
+  --accent: #e08854;
+  --accent-contrast: #1a140e;
+  --accent-soft: #3a2416;
+  --accent-2: #a89450;
+  --stamp: #e07050;
 }
 
 @theme inline {
@@ -55,13 +54,16 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
+  --color-paper: var(--paper);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-contrast: var(--accent-contrast);
   --color-accent-soft: var(--accent-soft);
   --color-accent-2: var(--accent-2);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --color-stamp: var(--stamp);
+  --font-sans: var(--font-source-serif), ui-serif, Georgia, Cambria, "Times New Roman", serif;
   --font-display: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .prose {
@@ -93,10 +95,15 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   background:
-    radial-gradient(ellipse 600px 500px at 0% 0%, var(--blob-1) 0%, transparent 70%),
-    radial-gradient(ellipse 500px 600px at 100% 20%, var(--blob-2) 0%, transparent 70%),
-    radial-gradient(ellipse 700px 400px at 30% 80%, var(--blob-3) 0%, transparent 70%),
-    radial-gradient(ellipse 400px 500px at 90% 90%, var(--blob-1) 0%, transparent 70%),
+    radial-gradient(ellipse 800px 500px at 10% 0%, rgba(193, 90, 51, 0.06), transparent 70%),
+    radial-gradient(ellipse 600px 500px at 95% 30%, rgba(138, 122, 58, 0.08), transparent 70%),
+    var(--background);
+  background-attachment: fixed;
+}
+.dark body {
+  background:
+    radial-gradient(ellipse 800px 500px at 10% 0%, rgba(224, 136, 84, 0.05), transparent 70%),
+    radial-gradient(ellipse 600px 500px at 95% 30%, rgba(168, 148, 80, 0.05), transparent 70%),
     var(--background);
   background-attachment: fixed;
 }
@@ -106,23 +113,251 @@ body {
   color: var(--foreground);
 }
 
+/* ── Display face (Fraunces) ─────────────────────────── */
 .font-display {
   font-family: var(--font-display);
   font-feature-settings: "ss01", "ss02";
+  font-variation-settings:
+    "SOFT" 50,
+    "opsz" 144;
+  letter-spacing: -0.01em;
+}
+
+/* ── Paper Journal primitives ────────────────────────── */
+
+/* Mono caps label — kickers, meta, dates, section numbers */
+.mono-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.mono-label-tight {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.mono-label-wide {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Hairline rule — 1px horizontal divider (inline flex-1) */
+.rule-line {
+  background: var(--border);
+  height: 1px;
+  flex-shrink: 0;
+}
+
+/* Tag pill — outlined, paw + label, terra fill on hover (cards, article hero) */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+.tag-pill:hover {
+  color: var(--accent-contrast);
+  border-color: var(--accent);
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+.tag-pill__paw {
+  opacity: 0.5;
+  transition: opacity 180ms ease;
+}
+.tag-pill:hover .tag-pill__paw {
+  opacity: 1;
+}
+
+/* Tag chip — mono small caps, no border (cards, hero) */
+.tag-chip-mono {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Filter pill — mono caps, outlined, active=terra fill (articles filter bar) */
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  background: transparent;
+  transition: all 0.15s ease;
+}
+.filter-pill:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.filter-pill[data-active="true"] {
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+  background: var(--accent);
+}
+
+/* Paper grain — subtle layered noise */
+.paper-grain {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 2px, rgba(35, 26, 20, 0.015) 2px 3px),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(35, 26, 20, 0.02) 2px 3px);
+}
+.dark .paper-grain {
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0 2px, rgba(241, 230, 208, 0.015) 2px 3px),
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(241, 230, 208, 0.02) 2px 3px);
+}
+
+/* Rotated stamp badge — for "Featured" etc. */
+.paper-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--stamp);
+  color: var(--stamp);
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  background: color-mix(in oklab, var(--paper) 92%, transparent);
+}
+
+/* Pill buttons */
+.pill-solid {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  background: var(--foreground);
+  color: var(--background);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+.pill-solid:hover {
+  background: color-mix(in oklab, var(--foreground) 85%, var(--accent));
+}
+.pill-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  border: 1px solid var(--foreground);
+  color: var(--foreground);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+.pill-outline:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+.pill-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.2s ease;
+}
+.pill-accent:hover {
+  background: color-mix(in oklab, var(--accent) 88%, black);
+}
+
+/* Section marker row: § 02 · Heading · ────── · Link → */
+.section-marker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.section-marker__num {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.section-marker__title {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-variation-settings:
+    "SOFT" 50,
+    "opsz" 144;
+  letter-spacing: -0.01em;
+  font-size: 28px;
+  line-height: 1.1;
+}
+.section-marker__rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.section-marker__link {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
 }
 
 /* Drop cap on first paragraph of article prose */
 .prose-article > p:first-of-type::first-letter {
   font-family: var(--font-display);
-  font-size: 3.6em;
-  line-height: 0.9;
+  font-weight: 500;
+  font-variation-settings:
+    "SOFT" 50,
+    "opsz" 144;
+  font-size: 4.2em;
+  line-height: 0.85;
   float: left;
-  padding: 0.1em 0.12em 0 0;
+  padding: 0.08em 0.12em 0 0;
   color: var(--accent);
-  font-weight: 600;
 }
 
-/* ── Scroll reveal ─────────────────────────────────── */
+/* ── Scroll reveal ───────────────────────────────────── */
 .scroll-reveal {
   opacity: 0;
   transform: translateY(24px);
@@ -136,33 +371,23 @@ body {
   transform: translateY(0);
 }
 
-
-/* ── Reading progress bar glow ─────────────────────── */
+/* ── Reading progress bar glow ───────────────────────── */
 .reading-bar {
   background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  box-shadow: 0 0 8px var(--accent), 0 0 2px var(--accent);
+  box-shadow:
+    0 0 8px var(--accent),
+    0 0 2px var(--accent);
 }
 
-/* ── Paw print divider ─────────────────────────────── */
-.paw-divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--border);
-}
-.paw-divider::before,
-.paw-divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-
-/* ── Skeleton pulse ────────────────────────────────── */
+/* ── Skeleton pulse ──────────────────────────────────── */
 @keyframes skeleton-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 .skeleton {
   background: linear-gradient(90deg, var(--border) 0%, var(--accent-soft) 50%, var(--border) 100%);
@@ -171,23 +396,24 @@ body {
   border-radius: 8px;
 }
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-/* ── 404 illustration float ────────────────────────── */
+/* ── 404 illustration float ──────────────────────────── */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 .float-animation {
   animation: float 3s ease-in-out infinite;
-}
-
-/* ── Subtle hero parallax via scroll ───────────────── */
-.parallax-hero {
-  overflow: hidden;
-}
-.parallax-hero img {
-  transition: transform 0.1s linear;
 }

@@ -1,4 +1,7 @@
-packages: []
+# Not a monorepo — this repo is a single package. This file exists solely to
+# set pnpm's `ignoredBuiltDependencies`, which pnpm reads from here even in
+# single-package projects. sharp and unrs-resolver have postinstall scripts
+# that aren't needed for our builds.
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver

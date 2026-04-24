@@ -1,4 +1,6 @@
+import { unstable_cache } from "next/cache";
 import { supabase } from "./supabase";
+import { PUBLISHED_STATUSES, col } from "./articles";
 import type { Locale } from "@/i18n/routing";
 
 export function slugifyTag(raw: string): string {
@@ -11,22 +13,32 @@ export function slugifyTag(raw: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-export async function findTagBySlug(
-  locale: Locale,
-  slug: string,
-): Promise<string | null> {
-  const tagCol = locale === "en" ? "tags" : `tags_${locale}`;
+async function fetchTagsForLocale(locale: Locale): Promise<string[][]> {
+  const tagCol = col(locale, "tags");
   const { data, error } = await supabase
     .from("articles")
     .select(tagCol)
-    .in("status", ["published", "queued"]);
+    .in("status", PUBLISHED_STATUSES)
+    .returns<Record<string, string[] | null>[]>();
   if (error) {
-    throw new Error(`[tags.findTagBySlug] ${JSON.stringify(error)}`);
+    throw new Error(`[tags.fetchTagsForLocale] ${JSON.stringify(error)}`);
   }
+  const rows = data ?? [];
+  return rows.map((row) => row[tagCol] ?? []);
+}
+
+// Tag aggregation has to happen in JS because PostgREST doesn't expose
+// array unnest+count. Pulling every row per request gets expensive as the
+// archive grows, so cache the per-locale tag arrays and aggregate from cache.
+const getCachedTagsForLocale = unstable_cache(fetchTagsForLocale, ["tag-arrays-by-locale"], {
+  revalidate: 3600,
+  tags: ["articles:tags"],
+});
+
+export async function findTagBySlug(locale: Locale, slug: string): Promise<string | null> {
+  const rows = await getCachedTagsForLocale(locale);
   const seen = new Set<string>();
-  const rows = (data ?? []) as unknown as Record<string, string[] | null>[];
-  for (const row of rows) {
-    const tags = row[tagCol] ?? [];
+  for (const tags of rows) {
     for (const t of tags) {
       if (!t || seen.has(t)) continue;
       seen.add(t);
@@ -34,4 +46,30 @@ export async function findTagBySlug(
     }
   }
   return null;
+}
+
+export async function getPopularTags(
+  locale: Locale,
+  limit = 6,
+): Promise<{ label: string; slug: string; count: number }[]> {
+  const rows = await getCachedTagsForLocale(locale);
+  const counts = new Map<string, { label: string; count: number }>();
+  for (const tags of rows) {
+    for (const raw of tags) {
+      if (!raw) continue;
+      const slug = slugifyTag(raw);
+      if (!slug) continue;
+      const existing = counts.get(slug);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        // Preserve the first spelling we see — capitalization, accents, etc.
+        counts.set(slug, { label: raw, count: 1 });
+      }
+    }
+  }
+  return Array.from(counts.entries())
+    .map(([slug, { label, count }]) => ({ slug, label, count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+    .slice(0, limit);
 }

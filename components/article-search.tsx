@@ -1,53 +1,62 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { SearchIcon } from "./search-icon";
 
-export function ArticleSearch({ locale }: { locale: string }) {
+// Delay URL updates until typing pauses. Short enough to feel responsive, long
+// enough that router transitions don't thrash mid-word.
+const SEARCH_DEBOUNCE_MS = 300;
+
+export function ArticleSearch({ className = "" }: { className?: string }) {
   const t = useTranslations("list");
-  const [query, setQuery] = useState("");
-  const [noResults, setNoResults] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const urlQ = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(urlQ);
+  const [prevUrlQ, setPrevUrlQ] = useState(urlQ);
+  const [, startTransition] = useTransition();
   const inputId = useId();
-  const emptyRef = useRef<HTMLParagraphElement | null>(null);
 
+  // Re-sync input when URL changes from elsewhere (back button, tag nav).
+  // Uses React's "adjusting state during render" pattern instead of useEffect —
+  // avoids the extra render pass and satisfies react-hooks/set-state-in-effect.
+  if (urlQ !== prevUrlQ) {
+    setPrevUrlQ(urlQ);
+    setQuery(urlQ);
+  }
+
+  // Debounce URL updates so every keystroke doesn't trigger a server render.
   useEffect(() => {
-    const cards = document.querySelectorAll<HTMLElement>(".js-article-card");
-    if (cards.length === 0) return;
-    const q = query.trim().toLocaleLowerCase(locale);
-    let visible = 0;
-    cards.forEach((card) => {
-      const text = card.dataset.searchText ?? "";
-      const match = q === "" || text.includes(q);
-      if (match) {
-        card.removeAttribute("data-hidden-by-search");
-        visible += 1;
+    if (query === urlQ) return;
+    const handle = window.setTimeout(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      const trimmed = query.trim();
+      if (trimmed) {
+        params.set("q", trimmed);
       } else {
-        card.setAttribute("data-hidden-by-search", "true");
+        params.delete("q");
       }
-    });
-    const empty = q !== "" && visible === 0;
-    queueMicrotask(() => setNoResults(empty));
-  }, [query, locale]);
+      params.delete("page");
+      const next = params.toString();
+      startTransition(() => {
+        router.replace(next ? `${pathname}?${next}` : pathname, { scroll: false });
+      });
+    }, SEARCH_DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [query, urlQ, pathname, router, searchParams]);
 
   return (
-    <div className="mb-6">
+    <>
       <label htmlFor={inputId} className="sr-only">
         {t("searchLabel")}
       </label>
-      <div className="relative">
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[color:var(--muted)]"
-        >
-          <circle cx="11" cy="11" r="7" />
-          <path d="m20 20-3.5-3.5" />
-        </svg>
+      <div
+        className={`flex items-center gap-2 rounded-full border border-[color:var(--border)] px-3 py-2 transition focus-within:border-[color:var(--accent)] ${className}`}
+      >
+        <SearchIcon className="h-3.5 w-3.5 shrink-0 text-[color:var(--muted)]" />
         <input
           id={inputId}
           type="search"
@@ -55,34 +64,9 @@ export function ArticleSearch({ locale }: { locale: string }) {
           onChange={(e) => setQuery(e.target.value)}
           placeholder={t("searchPlaceholder")}
           aria-label={t("searchLabel")}
-          className="w-full rounded-full border border-[color:var(--border)] bg-[color:var(--surface)] py-2.5 pl-10 pr-4 text-sm text-[color:var(--foreground)] placeholder:text-[color:var(--muted)] focus:border-[color:var(--accent)] focus:outline-none focus:ring-2 focus:ring-[color:var(--accent-soft)]"
+          className="w-full bg-transparent text-[15px] text-[color:var(--foreground)] placeholder:text-[color:var(--muted)] focus:outline-none"
         />
       </div>
-      {noResults && (
-        <div
-          ref={emptyRef}
-          role="status"
-          className="mt-8 flex flex-col items-center gap-3 text-center"
-        >
-          <svg
-            width="48"
-            height="48"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="text-[color:var(--border)]"
-            aria-hidden="true"
-          >
-            <ellipse cx="7" cy="5.5" rx="2.2" ry="2.8" />
-            <ellipse cx="17" cy="5.5" rx="2.2" ry="2.8" />
-            <ellipse cx="3.5" cy="11" rx="2" ry="2.5" />
-            <ellipse cx="20.5" cy="11" rx="2" ry="2.5" />
-            <path d="M12 22c-4.5 0-7-3-7-5.5S7.5 11 12 11s7 3 7 5.5S16.5 22 12 22z" />
-          </svg>
-          <p className="text-sm text-[color:var(--muted)]">
-            {t("searchNoResults", { query })}
-          </p>
-        </div>
-      )}
-    </div>
+    </>
   );
 }

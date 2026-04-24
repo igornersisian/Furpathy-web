@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Fraunces } from "next/font/google";
+import { Fraunces, Source_Serif_4, JetBrains_Mono } from "next/font/google";
 import Script from "next/script";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
@@ -8,13 +8,8 @@ import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { themeScript } from "@/components/theme-provider";
+import { SITE_URL, siteUrl } from "@/lib/site-config";
 import "../globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -23,7 +18,19 @@ const fraunces = Fraunces({
   axes: ["SOFT", "opsz"],
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://furpathy.com";
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+  display: "swap",
+  style: ["normal", "italic"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  weight: ["400", "500"],
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -35,6 +42,7 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  setRequestLocale(locale);
   const t = await getTranslations({ locale, namespace: "site" });
   return {
     metadataBase: new URL(SITE_URL),
@@ -58,13 +66,16 @@ export async function generateMetadata({
         "x-default": "/en",
       },
     },
+    // Note: child segments (about, articles, tags, articles/[slug]) override
+    // alternates with their own per-path languages — Next.js metadata merges
+    // shallowly, so leaving this in layout is only the default for /[locale].
     openGraph: {
       type: "website",
       siteName: t("name"),
       title: t("name"),
       description: t("tagline"),
       locale,
-      url: `${SITE_URL}/${locale}`,
+      url: siteUrl(`/${locale}`),
     },
     twitter: { card: "summary_large_image" },
   };
@@ -83,13 +94,17 @@ export default async function LocaleLayout({
   const tA11y = await getTranslations({ locale, namespace: "a11y" });
 
   return (
-    <html lang={locale} suppressHydrationWarning className={`${inter.variable} ${fraunces.variable}`}>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${sourceSerif.variable} ${fraunces.variable} ${jetbrainsMono.variable}`}
+    >
+      <head>
+        {/* Inline FOUC guard. See components/theme-provider.tsx for why Script */}
+        {/* strategy="beforeInteractive" can't replace this under Next 16 + React 19. */}
+        <script suppressHydrationWarning dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-screen font-sans text-[color:var(--foreground)] antialiased">
-        <Script
-          id="theme-init"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{ __html: themeScript }}
-        />
         <Script
           src="https://umami.deploybox.space/script.js"
           data-website-id="fe0720dc-8fc1-43a3-916d-2fd0f79d911a"
@@ -98,13 +113,15 @@ export default async function LocaleLayout({
         <NextIntlClientProvider>
           <a
             href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-[color:var(--accent)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-[color:var(--accent)] focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-white"
           >
             {tA11y("skipToContent")}
           </a>
           <div className="flex min-h-screen flex-col">
             <SiteHeader locale={locale} />
-            <main id="main" className="flex-1">{children}</main>
+            <main id="main" className="flex-1">
+              {children}
+            </main>
             <SiteFooter locale={locale} />
           </div>
         </NextIntlClientProvider>

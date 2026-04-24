@@ -1,7 +1,8 @@
 {
   "site": {
     "name": "Furpathy",
-    "tagline": "Warm, honest writing about life with dogs and cats."
+    "tagline": "Warm, honest writing about life with dogs and cats.",
+    "kicker": "A blog about pets"
   },
   "nav": {
     "home": "Home",
@@ -10,14 +11,18 @@
   },
   "home": {
     "latest": "Latest stories",
-    "seeAll": "See all articles"
+    "seeAll": "See all articles",
+    "edition": "The edition",
+    "mastheadLine1": "Warm, honest writing",
+    "mastheadLine2": "about life with dogs & cats.",
+    "coverStory": "Cover Story",
+    "statsLine1": "Four languages",
+    "statsLine2": "Researched carefully"
   },
   "article": {
     "readOnMedium": "Read on Medium",
     "continueReading": "Continue reading",
-    "onlyInEnglish": "Only in English",
     "minRead": "{minutes} min read",
-    "published": "Published {date}",
     "toc": "In this article"
   },
   "list": {
@@ -26,26 +31,32 @@
     "emptyCta": "Browse all articles",
     "byTag": "Tagged “{tag}”",
     "all": "All",
-    "filterByTag": "Filter by tag",
     "searchPlaceholder": "Search articles by title…",
     "searchLabel": "Search articles",
     "searchNoResults": "No articles match “{query}”.",
-    "clearTag": "Clear tag filter"
+    "index": "§ Index",
+    "intro": "The complete reading room. Use a tag to narrow the list, or search directly.",
+    "prev": "Newer",
+    "next": "Older",
+    "page": "Page {n}",
+    "tagMetaDescription": "Articles tagged “{tag}” on Furpathy — warm, honest writing about life with dogs and cats."
   },
   "about": {
     "title": "About Furpathy",
-    "body": "Furpathy is a small publication about the everyday realities of sharing life with dogs and cats. We write long-form, research-backed pieces in four languages so people everywhere can find trustworthy answers."
+    "body": "Furpathy is a small publication about the everyday realities of sharing life with dogs and cats. We write long-form, research-backed pieces in four languages so people everywhere can find trustworthy answers.",
+    "kicker": "§ Colophon",
+    "finePrintTitle": "The fine print",
+    "formatLabel": "Format",
+    "formatValue": "Long-form, weekly"
   },
   "footer": {
-    "rights": "© {year} Furpathy. All rights reserved.",
     "language": "Language",
-    "theme": "Theme"
+    "read": "Read",
+    "languages": "Languages",
+    "tagline": "A quiet publication about life with dogs and cats."
   },
   "theme": {
-    "toggle": "Toggle theme",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
+    "toggle": "Toggle theme"
   },
   "notFound": {
     "title": "Page not found",
@@ -59,13 +70,12 @@
     "retry": "Try again"
   },
   "a11y": {
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "pagination": "Pagination"
   },
   "share": {
     "label": "Share this article",
     "copyLink": "Copy link",
-    "copied": "Copied!",
-    "twitter": "Share on X",
-    "linkedin": "Share on LinkedIn"
+    "copied": "Copied!"
   }
 }

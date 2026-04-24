@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/routing";
+import { logger } from "./logger";
 
 export function formatDate(iso: string, locale: Locale): string {
   try {
@@ -7,7 +8,8 @@ export function formatDate(iso: string, locale: Locale): string {
       month: "long",
       day: "numeric",
     }).format(new Date(iso));
-  } catch {
+  } catch (err) {
+    logger.warn("format", "Intl.DateTimeFormat failed", { err, locale });
     return iso;
   }
 }

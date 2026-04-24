@@ -29,7 +29,6 @@ export function LanguageSwitcher({
       if (t) return `/${l}/articles/${t.slug}`;
       return `/${l}`;
     }
-    // Swap locale segment in current path
     const parts = pathname.split("/").filter(Boolean);
     if (parts.length === 0) return `/${l}`;
     parts[0] = l;
@@ -37,39 +36,57 @@ export function LanguageSwitcher({
   }
 
   return (
-    <nav aria-label={tFooter("language")} className="flex items-center gap-1 text-sm">
-      {routing.locales.map((l) => {
+    <nav aria-label={tFooter("language")} className="flex items-center gap-0.5 font-mono">
+      {routing.locales.map((l, i) => {
         const active = l === currentLocale;
         const available =
           !translations || translations.length === 0 || translations.some((t) => t.locale === l);
         const label = LABELS[l];
-        const className = `inline-flex items-center rounded-full px-2 py-1 text-xs font-medium tracking-wide transition ${
-          active
-            ? "bg-[color:var(--accent)] text-[color:var(--accent-contrast)]"
-            : available
-              ? "text-[color:var(--muted)] hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--foreground)]"
-              : "text-[color:var(--muted)]/50 cursor-not-allowed"
-        }`;
+        const base =
+          "inline-flex items-center px-1.5 text-[10.5px] tracking-[0.18em] uppercase transition";
+        const color = active
+          ? "text-[color:var(--accent)]"
+          : available
+            ? "text-[color:var(--muted)] hover:text-[color:var(--foreground)]"
+            : "text-[color:var(--muted)]/40 cursor-not-allowed";
+
+        const content = (
+          <>
+            <span className="sr-only">{label.name}</span>
+            <span>{label.code}</span>
+          </>
+        );
+
+        const separator =
+          i > 0 ? (
+            <span aria-hidden="true" className="text-[10.5px] text-[color:var(--muted)]/50">
+              ·
+            </span>
+          ) : null;
+
         if (!available && !active) {
           return (
-            <span key={l} className={className} aria-disabled="true" title={label.name}>
-              <span className="sr-only">{label.name}</span>
-              <span>{label.code}</span>
+            <span key={l} className="inline-flex items-center">
+              {separator}
+              <span className={`${base} ${color}`} aria-disabled="true" title={label.name}>
+                {content}
+              </span>
             </span>
           );
         }
         return (
-          <Link
-            key={l}
-            href={hrefFor(l)}
-            className={className}
-            title={label.name}
-            hrefLang={l}
-            aria-current={active ? "page" : undefined}
-          >
-            <span className="sr-only">{label.name}</span>
-            <span>{label.code}</span>
-          </Link>
+          <span key={l} className="inline-flex items-center">
+            {separator}
+            <Link
+              href={hrefFor(l)}
+              className={`${base} ${color}`}
+              title={label.name}
+              hrefLang={l}
+              aria-current={active ? "page" : undefined}
+            >
+              {content}
+            </Link>
+          </span>
         );
       })}
     </nav>

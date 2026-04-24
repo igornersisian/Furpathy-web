@@ -1,10 +1,11 @@
+import { getTranslations } from "next-intl/server";
 import { getLatest } from "@/lib/articles";
-import { routing, type Locale } from "@/i18n/routing";
+import { isLocale } from "@/i18n/routing";
+import { siteUrl } from "@/lib/site-config";
 import type { NextRequest } from "next/server";
 
+export const dynamic = "force-static";
 export const revalidate = 600;
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://furpathy.com";
 
 function escape(s: string): string {
   return s
@@ -15,24 +16,25 @@ function escape(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: Promise<{ locale: string }> },
-) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ locale: string }> }) {
   const { locale: rawLocale } = await params;
-  if (!routing.locales.includes(rawLocale as Locale)) {
+  if (!isLocale(rawLocale)) {
     return new Response("Not found", { status: 404 });
   }
-  const locale = rawLocale as Locale;
+  const locale = rawLocale;
+  const tSite = await getTranslations({ locale, namespace: "site" });
   const articles = await getLatest(locale, 30);
   const items = articles
     .map((a) => {
-      const url = `${SITE_URL}/${locale}/articles/${a.slug}`;
+      const url = siteUrl(`/${locale}/articles/${a.slug}`);
+      // Prefer published_at (the public face of the article). Fall back to
+      // created_at for older rows that may not have been backfilled.
+      const pubSource = a.publishedAt ?? a.createdAt;
       return `    <item>
       <title>${escape(a.title)}</title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${new Date(a.createdAt).toUTCString()}</pubDate>
+      <pubDate>${new Date(pubSource).toUTCString()}</pubDate>
       <description>${escape(a.description ?? "")}</description>
     </item>`;
     })
@@ -42,8 +44,8 @@ export async function GET(
 <rss version="2.0">
   <channel>
     <title>Furpathy (${locale.toUpperCase()})</title>
-    <link>${SITE_URL}/${locale}</link>
-    <description>Warm, honest writing about life with dogs and cats.</description>
+    <link>${siteUrl(`/${locale}`)}</link>
+    <description>${escape(tSite("tagline"))}</description>
     <language>${locale}</language>
 ${items}
   </channel>

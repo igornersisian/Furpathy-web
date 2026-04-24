@@ -1,7 +1,8 @@
 {
   "site": {
     "name": "Furpathy",
-    "tagline": "Warme, ehrliche Geschichten über das Leben mit Hund und Katze."
+    "tagline": "Warme, ehrliche Geschichten über das Leben mit Hund und Katze.",
+    "kicker": "Ein Blog über Haustiere"
   },
   "nav": {
     "home": "Start",
@@ -10,14 +11,18 @@
   },
   "home": {
     "latest": "Neueste Geschichten",
-    "seeAll": "Alle Artikel ansehen"
+    "seeAll": "Alle Artikel ansehen",
+    "edition": "Die Ausgabe",
+    "mastheadLine1": "Warme, ehrliche Geschichten",
+    "mastheadLine2": "über das Leben mit Hund und Katze.",
+    "coverStory": "Titelgeschichte",
+    "statsLine1": "Vier Sprachen",
+    "statsLine2": "Sorgfältig recherchiert"
   },
   "article": {
     "readOnMedium": "Auf Medium lesen",
     "continueReading": "Weiterlesen",
-    "onlyInEnglish": "Nur auf Englisch",
     "minRead": "{minutes} Min. Lesezeit",
-    "published": "Veröffentlicht am {date}",
     "toc": "In diesem Artikel"
   },
   "list": {
@@ -26,26 +31,32 @@
     "emptyCta": "Alle Artikel ansehen",
     "byTag": "Tag „{tag}“",
     "all": "Alle",
-    "filterByTag": "Nach Tag filtern",
     "searchPlaceholder": "Artikel nach Titel suchen…",
     "searchLabel": "Artikel suchen",
     "searchNoResults": "Keine Artikel passen zu „{query}“.",
-    "clearTag": "Tag-Filter entfernen"
+    "index": "§ Übersicht",
+    "intro": "Der komplette Lesesaal. Wähle einen Tag zum Einschränken oder suche direkt.",
+    "prev": "Neuere",
+    "next": "Ältere",
+    "page": "Seite {n}",
+    "tagMetaDescription": "Artikel mit dem Tag „{tag}“ auf Furpathy — warme, ehrliche Geschichten über das Leben mit Hund und Katze."
   },
   "about": {
     "title": "Über Furpathy",
-    "body": "Furpathy ist eine kleine Publikation über den Alltag mit Hunden und Katzen. Wir schreiben ausführliche, gut recherchierte Artikel in vier Sprachen, damit überall verlässliche Antworten gefunden werden können."
+    "body": "Furpathy ist eine kleine Publikation über den Alltag mit Hunden und Katzen. Wir schreiben ausführliche, gut recherchierte Artikel in vier Sprachen, damit überall verlässliche Antworten gefunden werden können.",
+    "kicker": "§ Kolophon",
+    "finePrintTitle": "Das Kleingedruckte",
+    "formatLabel": "Format",
+    "formatValue": "Langform, wöchentlich"
   },
   "footer": {
-    "rights": "© {year} Furpathy. Alle Rechte vorbehalten.",
     "language": "Sprache",
-    "theme": "Design"
+    "read": "Lesen",
+    "languages": "Sprachen",
+    "tagline": "Eine ruhige Publikation über das Leben mit Hunden und Katzen."
   },
   "theme": {
-    "toggle": "Design wechseln",
-    "light": "Hell",
-    "dark": "Dunkel",
-    "system": "System"
+    "toggle": "Design wechseln"
   },
   "notFound": {
     "title": "Seite nicht gefunden",
@@ -59,13 +70,12 @@
     "retry": "Erneut versuchen"
   },
   "a11y": {
-    "skipToContent": "Zum Inhalt springen"
+    "skipToContent": "Zum Inhalt springen",
+    "pagination": "Seitennummerierung"
   },
   "share": {
     "label": "Artikel teilen",
     "copyLink": "Link kopieren",
-    "copied": "Kopiert!",
-    "twitter": "Auf X teilen",
-    "linkedin": "Auf LinkedIn teilen"
+    "copied": "Kopiert!"
   }
 }

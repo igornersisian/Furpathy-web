@@ -1,37 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { logger } from "@/lib/logger";
+
+// How long the "Copied!" confirmation stays visible after a successful copy.
+const COPY_FEEDBACK_MS = 2000;
 
 type Props = {
   url: string;
-  title: string;
 };
 
 export function ShareButtons({ url }: Props) {
   const t = useTranslations("share");
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   async function onCopy() {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* ignore clipboard failure */
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setCopied(false), COPY_FEEDBACK_MS);
+    } catch (err) {
+      // Leave `copied` false so the button label stays as "Copy link" —
+      // don't lie to the user about success.
+      logger.warn("share-buttons", "clipboard write failed", { err, url });
     }
   }
 
-  const pillClass =
-    "inline-flex items-center gap-1.5 rounded-full border border-[color:var(--border)] px-3 py-1.5 text-xs font-medium text-[color:var(--muted)] transition hover:bg-[color:var(--accent-soft)] hover:text-[color:var(--foreground)]";
-
   return (
-    <div
-      role="group"
-      aria-label={t("label")}
-      className="flex flex-wrap items-center justify-center gap-2"
-    >
-      <button type="button" onClick={onCopy} className={pillClass} aria-label={t("copyLink")}>
+    <div role="group" aria-label={t("label")} className="flex flex-wrap gap-2">
+      <button type="button" onClick={onCopy} className="filter-pill" aria-label={t("copyLink")}>
         {copied ? t("copied") : t("copyLink")}
       </button>
     </div>

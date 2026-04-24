@@ -1,7 +1,8 @@
 {
   "site": {
     "name": "Furpathy",
-    "tagline": "Historias cálidas y honestas sobre la vida con perros y gatos."
+    "tagline": "Historias cálidas y honestas sobre la vida con perros y gatos.",
+    "kicker": "Un blog sobre mascotas"
   },
   "nav": {
     "home": "Inicio",
@@ -10,14 +11,18 @@
   },
   "home": {
     "latest": "Últimas historias",
-    "seeAll": "Ver todos los artículos"
+    "seeAll": "Ver todos los artículos",
+    "edition": "La edición",
+    "mastheadLine1": "Relatos cálidos y honestos",
+    "mastheadLine2": "sobre la vida con perros y gatos.",
+    "coverStory": "Historia principal",
+    "statsLine1": "Cuatro idiomas",
+    "statsLine2": "Investigado con calma"
   },
   "article": {
     "readOnMedium": "Leer en Medium",
     "continueReading": "Sigue leyendo",
-    "onlyInEnglish": "Solo en inglés",
     "minRead": "{minutes} min de lectura",
-    "published": "Publicado el {date}",
     "toc": "En este artículo"
   },
   "list": {
@@ -26,26 +31,32 @@
     "emptyCta": "Ver todos los artículos",
     "byTag": "Etiqueta “{tag}”",
     "all": "Todos",
-    "filterByTag": "Filtrar por etiqueta",
     "searchPlaceholder": "Buscar artículos por título…",
     "searchLabel": "Buscar artículos",
     "searchNoResults": "Ningún artículo coincide con «{query}».",
-    "clearTag": "Quitar filtro de etiqueta"
+    "index": "§ Índice",
+    "intro": "La sala de lectura completa. Usa una etiqueta para acotar, o busca directamente.",
+    "prev": "Anteriores",
+    "next": "Siguientes",
+    "page": "Página {n}",
+    "tagMetaDescription": "Artículos con la etiqueta «{tag}» en Furpathy — relatos cálidos y honestos sobre la vida con perros y gatos."
   },
   "about": {
     "title": "Sobre Furpathy",
-    "body": "Furpathy es una pequeña publicación sobre la vida cotidiana con perros y gatos. Escribimos artículos extensos y bien documentados en cuatro idiomas para que cualquiera pueda encontrar respuestas fiables."
+    "body": "Furpathy es una pequeña publicación sobre la vida cotidiana con perros y gatos. Escribimos artículos extensos y bien documentados en cuatro idiomas para que cualquiera pueda encontrar respuestas fiables.",
+    "kicker": "§ Colofón",
+    "finePrintTitle": "La letra pequeña",
+    "formatLabel": "Formato",
+    "formatValue": "Formato largo, semanal"
   },
   "footer": {
-    "rights": "© {year} Furpathy. Todos los derechos reservados.",
     "language": "Idioma",
-    "theme": "Tema"
+    "read": "Leer",
+    "languages": "Idiomas",
+    "tagline": "Una publicación pausada sobre la vida con perros y gatos."
   },
   "theme": {
-    "toggle": "Cambiar tema",
-    "light": "Claro",
-    "dark": "Oscuro",
-    "system": "Sistema"
+    "toggle": "Cambiar tema"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -59,13 +70,12 @@
     "retry": "Reintentar"
   },
   "a11y": {
-    "skipToContent": "Saltar al contenido"
+    "skipToContent": "Saltar al contenido",
+    "pagination": "Paginación"
   },
   "share": {
     "label": "Compartir este artículo",
     "copyLink": "Copiar enlace",
-    "copied": "¡Copiado!",
-    "twitter": "Compartir en X",
-    "linkedin": "Compartir en LinkedIn"
+    "copied": "¡Copiado!"
   }
 }
