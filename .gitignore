@@ -41,3 +41,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Claude Code internal sandbox / worktrees — local only, never commit
+.claude/
+
+# Designer scratch files — local reference only, not wired into the app
+/design_handoff_furpathy/
