@@ -2,6 +2,10 @@
 # set pnpm's `ignoredBuiltDependencies`, which pnpm reads from here even in
 # single-package projects. sharp and unrs-resolver have postinstall scripts
 # that aren't needed for our builds.
+#
+# `packages: []` is required by pnpm 9 (CI) even when empty; pnpm 10+ is
+# lenient without it. Keep it explicit so both versions accept this file.
+packages: []
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
