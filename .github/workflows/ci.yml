@@ -12,9 +12,6 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-placeholder-key
-      # Short-circuits Supabase fetches so `next build` doesn't need real creds.
-      # See lib/supabase.ts — every query resolves to an empty array.
-      SUPABASE_BUILD_STUB: "1"
     steps:
       - uses: actions/checkout@v4
 
@@ -41,4 +38,10 @@ jobs:
 
       - run: pnpm test:coverage
 
+      # Short-circuits Supabase fetches so `next build` doesn't need real
+      # creds (see lib/supabase.ts — every query resolves to an empty array).
+      # Scoped to this step only so the variable doesn't hijack fetchWithRetry
+      # inside unit tests, where they mock fetch via the fetchImpl dep.
       - run: pnpm build
+        env:
+          SUPABASE_BUILD_STUB: "1"
