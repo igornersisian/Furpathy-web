@@ -31,7 +31,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.104.1",
     "github-slugger": "^2.0.0",
-    "next": "16.2.4",
+    "next": "16.2.6",
     "next-intl": "^4.9.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
