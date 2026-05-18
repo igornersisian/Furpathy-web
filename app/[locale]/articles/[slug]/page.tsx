@@ -6,9 +6,11 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import {
   findArticleByAnySlug,
   getAllSlugsForLocale,
+  getById,
   getBySlug,
   getRelated,
   getTranslationsFor,
+  translationSlug,
 } from "@/lib/articles";
 import { MarkdownRenderer } from "@/components/markdown-renderer";
 import { ArticleGrid } from "@/components/article-grid";
@@ -92,6 +94,20 @@ export default async function ArticlePage({
   const tShare = await getTranslations("share");
 
   const article = await getBySlug(locale, slug);
+
+  // Topic-duplicate redirect: this row was marked as a loser by the topic-
+  // dedup cleanup. 301 to the canonical article's slug in the current locale
+  // (or its EN slug as a fallback) so link equity flows to the winner.
+  if (article?.canonicalId) {
+    const canonical = await getById(article.canonicalId);
+    if (canonical) {
+      const targetSlug = translationSlug(canonical, locale) ?? canonical.slug;
+      if (targetSlug && targetSlug !== slug) {
+        permanentRedirect(`/${locale}/articles/${targetSlug}`);
+      }
+    }
+  }
+
   if (!article) {
     const probe = await findArticleByAnySlug(slug);
     if (probe && (probe.locale !== locale || probe.slug !== slug)) {

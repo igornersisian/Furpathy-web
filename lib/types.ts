@@ -31,6 +31,10 @@ export type ArticleRow = {
   medium_url: string | null;
   created_at: string;
   published_at: string | null;
+  // When non-null, this row is a topic-duplicate that 301-redirects to the
+  // canonical article identified by canonical_id. Listings, sitemap, and
+  // related-article queries exclude such rows.
+  canonical_id: string | null;
 };
 
 export type Article = {
@@ -46,6 +50,7 @@ export type Article = {
   createdAt: string;
   mediumUrl: string | null;
   readingTimeMin: number;
+  canonicalId: string | null;
 };
 
 export type ArticleCard = Omit<Article, "content">;

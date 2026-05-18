@@ -5,6 +5,7 @@ function probe(overrides: Partial<ProbeRow> = {}): ProbeRow {
   return {
     id: "1",
     published_at: "2026-01-01T00:00:00Z",
+    canonical_id: null,
     slug: "hello",
     title: "Hello",
     slug_es: null,

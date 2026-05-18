@@ -3,7 +3,7 @@ import { supabase } from "./supabase";
 import type { Article, ArticleCard, ArticleRow } from "./types";
 import { routing, type Locale } from "@/i18n/routing";
 
-const SHARED_COLUMNS = "id, image_url, status, medium_url, created_at, published_at";
+const SHARED_COLUMNS = "id, image_url, status, medium_url, created_at, published_at, canonical_id";
 
 // `queued` covers rows that are scheduled but not yet formally `published`;
 // treat both as publicly visible so revalidation picks them up on time.
@@ -29,12 +29,13 @@ function columnsFor(locale: Locale): string {
 // slug is — they never render markdown. Skipping the four `content_*` columns
 // (each potentially megabytes) is the main win over the previous implementation.
 const PROBE_COLUMNS =
-  "id, published_at, slug, title, slug_es, title_es, slug_de, title_de, slug_pt, title_pt";
+  "id, published_at, canonical_id, slug, title, slug_es, title_es, slug_de, title_de, slug_pt, title_pt";
 
 export type ProbeRow = Pick<
   ArticleRow,
   | "id"
   | "published_at"
+  | "canonical_id"
   | "slug"
   | "title"
   | "slug_es"
@@ -117,6 +118,7 @@ export function mapRow(row: ArticleRow, locale: Locale): Article | null {
     createdAt: row.created_at,
     mediumUrl: row.medium_url,
     readingTimeMin: readTime(f.content),
+    canonicalId: row.canonical_id,
   };
 }
 
@@ -144,6 +146,7 @@ export async function getLatest(locale: Locale, limit = 12): Promise<ArticleCard
     .from("articles")
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
+    .is("canonical_id", null)
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit)
     .returns<ArticleRow[]>();
@@ -164,6 +167,7 @@ export async function getAllPublished(
     .from("articles")
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
+    .is("canonical_id", null)
     .order("published_at", { ascending: false, nullsFirst: false })
     .range(from, to);
 
@@ -250,6 +254,7 @@ export async function getAllSlugsForLocale(
     .from("articles")
     .select(PROBE_COLUMNS)
     .in("status", PUBLISHED_STATUSES)
+    .is("canonical_id", null)
     .returns<ProbeRow[]>();
   if (error) fail("getAllSlugsForLocale", error);
   const rows = data ?? [];
@@ -272,6 +277,7 @@ export async function getRelated(
     .from("articles")
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
+    .is("canonical_id", null)
     .overlaps(col(locale, "tags"), tags)
     .neq("id", articleId)
     .order("published_at", { ascending: false, nullsFirst: false })
@@ -309,6 +315,7 @@ export async function getAllForSitemap(): Promise<
     .from("articles")
     .select(PROBE_COLUMNS)
     .in("status", PUBLISHED_STATUSES)
+    .is("canonical_id", null)
     .returns<ProbeRow[]>();
   if (error) fail("getAllForSitemap", error);
   const rows = data ?? [];
@@ -317,4 +324,20 @@ export async function getAllForSitemap(): Promise<
     publishedAt: r.published_at ?? null,
     translations: collectTranslations(r),
   }));
+}
+
+// Resolve the canonical (winner) article for a topic-duplicate redirect.
+// Returns a ProbeRow so the caller can compute the right locale-specific
+// slug via translationSlug. Includes canonical_id in case the winner itself
+// has been redirected (defensive — clustering should produce a single winner).
+export async function getById(id: string): Promise<ProbeRow | null> {
+  const { data, error } = await supabase
+    .from("articles")
+    .select(PROBE_COLUMNS)
+    .eq("id", id)
+    .limit(1)
+    .returns<ProbeRow[]>();
+  if (error) fail("getById", error);
+  if (!data || data.length === 0) return null;
+  return data[0];
 }

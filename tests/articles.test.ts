@@ -30,6 +30,7 @@ function baseRow(overrides: Partial<ArticleRow> = {}): ArticleRow {
     medium_url: null,
     created_at: "2026-01-01T00:00:00Z",
     published_at: "2026-01-02T00:00:00Z",
+    canonical_id: null,
     ...overrides,
   };
 }
