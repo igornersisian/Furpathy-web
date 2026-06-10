@@ -5,7 +5,6 @@ import { notFound, permanentRedirect } from "next/navigation";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import {
   findArticleByAnySlug,
-  getAllSlugsForLocale,
   getById,
   getBySlug,
   getRelated,
@@ -24,19 +23,17 @@ import { extractToc } from "@/lib/toc";
 import { formatDate } from "@/lib/format";
 import { parseLocale } from "@/i18n/routing";
 import { SITE_URL, siteUrl } from "@/lib/site-config";
-import { logger } from "@/lib/logger";
 
-export const revalidate = 600;
-
-export async function generateStaticParams({ params }: { params: { locale: string } }) {
-  try {
-    const rows = await getAllSlugsForLocale(parseLocale(params.locale));
-    return rows.map((r) => ({ slug: r.slug }));
-  } catch (err) {
-    logger.warn("generateStaticParams", "skipping prerender", { err, locale: params.locale });
-    return [];
-  }
-}
+// Force dynamic rendering for article pages. We previously prerendered them at
+// build time via `generateStaticParams` + ISR `revalidate = 600`, but build-time
+// fetches occasionally produced stale rows (apparently without `canonical_id`)
+// which made the redirect check in this component silently fall through and
+// cached loser articles as normal 200 pages — leading to a massive GSC
+// duplicate-content penalty. Running per request guarantees the redirect check
+// always sees fresh DB state. Traffic is low enough that the extra Supabase
+// reads are not a concern; if that ever changes, switch to `unstable_cache` on
+// a per-slug basis with explicit tags invalidated on canonical_id updates.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
