@@ -92,16 +92,31 @@ export default async function ArticlePage({
 
   const article = await getBySlug(locale, slug);
 
+  // TEMPORARY DEBUG: log what we got from getBySlug for any article.
+  // Remove after canonical_id redirect bug is fixed.
+  if (article) {
+    console.error(
+      `[debug] page slug=${slug} locale=${locale} article.id=${article.id} article.canonicalId=${article.canonicalId ?? "null"}`,
+    );
+  } else {
+    console.error(`[debug] page slug=${slug} locale=${locale} article=null`);
+  }
+
   // Topic-duplicate redirect: this row was marked as a loser by the topic-
   // dedup cleanup. 301 to the canonical article's slug in the current locale
   // (or its EN slug as a fallback) so link equity flows to the winner.
   if (article?.canonicalId) {
+    console.error(`[debug] canonical_id detected: ${article.canonicalId}, fetching winner`);
     const canonical = await getById(article.canonicalId);
     if (canonical) {
       const targetSlug = translationSlug(canonical, locale) ?? canonical.slug;
+      console.error(`[debug] winner found, targetSlug=${targetSlug}`);
       if (targetSlug && targetSlug !== slug) {
+        console.error(`[debug] redirecting to /${locale}/articles/${targetSlug}`);
         permanentRedirect(`/${locale}/articles/${targetSlug}`);
       }
+    } else {
+      console.error(`[debug] winner NOT found for canonical_id ${article.canonicalId}`);
     }
   }
 
