@@ -92,63 +92,26 @@ export default async function ArticlePage({
 
   const article = await getBySlug(locale, slug);
 
-  // TEMPORARY DEBUG: log what we got from getBySlug for any article.
-  // Remove after canonical_id redirect bug is fixed.
-  if (article) {
-    console.error(
-      `[debug] page slug=${slug} locale=${locale} article.id=${article.id} article.canonicalId=${article.canonicalId ?? "null"}`,
-    );
-  } else {
-    console.error(`[debug] page slug=${slug} locale=${locale} article=null`);
-  }
-
-  // Topic-duplicate redirect: this row was marked as a loser by the topic-
-  // dedup cleanup. 301 to the canonical article's slug in the current locale
-  // (or its EN slug as a fallback) so link equity flows to the winner.
+  // Topic-duplicate redirect (defense-in-depth). The proxy middleware normally
+  // 301s loser → winner before the request reaches this page, but Next 16.2.6
+  // (Turbopack) silently drops the `NEXT_REDIRECT` thrown here on force-dynamic
+  // pages, so this block is a no-op on the current runtime — it stays only so
+  // the behavior is correct if/when that framework bug is fixed. See proxy.ts.
   if (article?.canonicalId) {
-    console.error(`[debug] canonical_id detected: ${article.canonicalId}, fetching winner`);
     const canonical = await getById(article.canonicalId);
     if (canonical) {
       const targetSlug = translationSlug(canonical, locale) ?? canonical.slug;
-      console.error(`[debug] winner found, targetSlug=${targetSlug}`);
       if (targetSlug && targetSlug !== slug) {
-        console.error(`[debug] redirecting to /${locale}/articles/${targetSlug}`);
-        try {
-          permanentRedirect(`/${locale}/articles/${targetSlug}`);
-        } catch (e: unknown) {
-          const err = e as { message?: string; digest?: string };
-          console.error(
-            `[debug] CAUGHT in topic-redirect: message=${err?.message ?? "n/a"} digest=${err?.digest ?? "n/a"}`,
-          );
-          throw e;
-        }
-        console.error(`[debug] !!! AFTER permanentRedirect — SHOULD NOT APPEAR (topic-redirect)`);
+        permanentRedirect(`/${locale}/articles/${targetSlug}`);
       }
-    } else {
-      console.error(`[debug] winner NOT found for canonical_id ${article.canonicalId}`);
     }
   }
 
   if (!article) {
-    console.error(`[debug] article=null, probing findArticleByAnySlug for slug=${slug}`);
     const probe = await findArticleByAnySlug(slug);
-    console.error(
-      `[debug] probe result: ${probe ? `locale=${probe.locale} slug=${probe.slug}` : "null"}`,
-    );
     if (probe && (probe.locale !== locale || probe.slug !== slug)) {
-      console.error(`[debug] probe-redirect to /${probe.locale}/articles/${probe.slug}`);
-      try {
-        permanentRedirect(`/${probe.locale}/articles/${probe.slug}`);
-      } catch (e: unknown) {
-        const err = e as { message?: string; digest?: string };
-        console.error(
-          `[debug] CAUGHT in probe-redirect: message=${err?.message ?? "n/a"} digest=${err?.digest ?? "n/a"}`,
-        );
-        throw e;
-      }
-      console.error(`[debug] !!! AFTER permanentRedirect — SHOULD NOT APPEAR (probe-redirect)`);
+      permanentRedirect(`/${probe.locale}/articles/${probe.slug}`);
     }
-    console.error(`[debug] calling notFound()`);
     notFound();
   }
 
