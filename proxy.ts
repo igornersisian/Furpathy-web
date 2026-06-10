@@ -67,7 +67,14 @@ async function probe(base: string, key: string, filter: string): Promise<Row | n
     headers: { apikey: key, authorization: `Bearer ${key}` },
     cache: "no-store",
   });
-  if (!res.ok) return null;
+  // THROW (don't return null) when the request itself fails. A null return means
+  // "this slug is genuinely not in the DB" → the caller turns it into a 404. A
+  // transient Supabase 5xx/429 must NEVER reach that path: it would 404 a live
+  // article (the build logs have shown bursts of 7×503). Throwing instead lets
+  // proxy()'s outer try/catch fail OPEN → intlMiddleware → the page, which has
+  // its own 7-attempt retry (lib/supabase.ts) and 500s rather than 404s on a
+  // real outage. Only a successful query with zero rows means "not found".
+  if (!res.ok) throw new Error(`supabase probe failed: ${res.status}`);
   const rows = (await res.json()) as Row[];
   return rows[0] ?? null;
 }
