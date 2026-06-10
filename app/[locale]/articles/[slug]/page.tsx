@@ -113,7 +113,16 @@ export default async function ArticlePage({
       console.error(`[debug] winner found, targetSlug=${targetSlug}`);
       if (targetSlug && targetSlug !== slug) {
         console.error(`[debug] redirecting to /${locale}/articles/${targetSlug}`);
-        permanentRedirect(`/${locale}/articles/${targetSlug}`);
+        try {
+          permanentRedirect(`/${locale}/articles/${targetSlug}`);
+        } catch (e: unknown) {
+          const err = e as { message?: string; digest?: string };
+          console.error(
+            `[debug] CAUGHT in topic-redirect: message=${err?.message ?? "n/a"} digest=${err?.digest ?? "n/a"}`,
+          );
+          throw e;
+        }
+        console.error(`[debug] !!! AFTER permanentRedirect — SHOULD NOT APPEAR (topic-redirect)`);
       }
     } else {
       console.error(`[debug] winner NOT found for canonical_id ${article.canonicalId}`);
@@ -121,10 +130,25 @@ export default async function ArticlePage({
   }
 
   if (!article) {
+    console.error(`[debug] article=null, probing findArticleByAnySlug for slug=${slug}`);
     const probe = await findArticleByAnySlug(slug);
+    console.error(
+      `[debug] probe result: ${probe ? `locale=${probe.locale} slug=${probe.slug}` : "null"}`,
+    );
     if (probe && (probe.locale !== locale || probe.slug !== slug)) {
-      permanentRedirect(`/${probe.locale}/articles/${probe.slug}`);
+      console.error(`[debug] probe-redirect to /${probe.locale}/articles/${probe.slug}`);
+      try {
+        permanentRedirect(`/${probe.locale}/articles/${probe.slug}`);
+      } catch (e: unknown) {
+        const err = e as { message?: string; digest?: string };
+        console.error(
+          `[debug] CAUGHT in probe-redirect: message=${err?.message ?? "n/a"} digest=${err?.digest ?? "n/a"}`,
+        );
+        throw e;
+      }
+      console.error(`[debug] !!! AFTER permanentRedirect — SHOULD NOT APPEAR (probe-redirect)`);
     }
+    console.error(`[debug] calling notFound()`);
     notFound();
   }
 
