@@ -4,20 +4,22 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
 
-// Topic-duplicate / cross-locale 301s are handled HERE, in the proxy, rather
-// than in app/[locale]/articles/[slug]/page.tsx. Next.js 16.2.6 (Turbopack)
-// swallows the `NEXT_REDIRECT` thrown by `permanentRedirect()` on
-// `force-dynamic` pages — the throw fires with a correct `;308;` digest but the
-// response still goes out as 200 with the loser's content (verified via
-// container logs 2026-06-10). `NextResponse.redirect()` returns a real Response
-// object and is immune to that bug. Keeping the logic in the proxy also means
-// the redirect happens before the page renders, saving a render.
+// Server-side redirects AND 404s for article/tag routes are handled HERE, in the
+// proxy, rather than via `permanentRedirect()` / `notFound()` in the page.
+// Next.js 16.2.6 (Turbopack) swallows the sentinels those throw on dynamically
+// rendered routes: the throw fires with a correct `;308;` / not-found digest,
+// but the response still goes out as 200 — a broken redirect or a soft-404
+// (verified via container logs + curl 2026-06-10). `NextResponse` returns real
+// Response objects and is immune to that bug. As a bonus the work happens before
+// the page renders. Page-level `permanentRedirect`/`notFound` stay as
+// defense-in-depth for if/when the framework bug is fixed.
 
 type Loc = "en" | "es" | "de" | "pt";
 
 // Only well-formed lowercase slugs reach an article; this also guarantees the
 // value is safe to interpolate into a PostgREST filter (no commas/parens/etc).
 const ARTICLE_RE = /^\/(en|es|de|pt)\/articles\/([a-z0-9-]+)\/?$/;
+const TAG_RE = /^\/(en|es|de|pt)\/tags\/([^/]+?)\/?$/;
 
 type Row = {
   id: string;
@@ -44,6 +46,21 @@ function slugFor(row: Row, locale: Loc): string | null {
   return row.slug_pt && row.title_pt ? row.slug_pt : null;
 }
 
+// Pure tag slugifier — must match lib/tags.ts:slugifyTag exactly so the proxy
+// and the page agree on a tag's canonical form. Inlined to avoid importing
+// lib/tags.ts, which pulls in the Supabase client at module load. slugifyTag is
+// idempotent (slugifyTag(slugifyTag(x)) === slugifyTag(x)), so redirecting to
+// the canonical form can never loop.
+function slugifyTag(raw: string): string {
+  return raw
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 async function probe(base: string, key: string, filter: string): Promise<Row | null> {
   const url = `${base}/rest/v1/articles?${filter}&status=in.(published,queued)&select=${SELECT}&limit=1`;
   const res = await fetch(url, {
@@ -55,25 +72,21 @@ async function probe(base: string, key: string, filter: string): Promise<Row | n
   return rows[0] ?? null;
 }
 
-// Returns the canonical destination path for an article request, or null when
-// the request is already canonical (or the slug is unknown — let the page 404).
-async function resolveRedirect(req: NextRequest): Promise<string | null> {
-  const m = ARTICLE_RE.exec(req.nextUrl.pathname);
-  if (!m) return null;
-  const locale = m[1] as Loc;
-  const slug = m[2];
+type Action = { kind: "redirect"; to: string } | { kind: "notFound" } | null;
 
+// Resolve an article request: redirect a topic-duplicate/cross-locale slug to
+// its canonical destination, 404 a slug no published article owns, else pass.
+async function resolveArticle(locale: Loc, slug: string): Promise<Action> {
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!base || !key) return null;
 
-  // Find the row that owns this slug in ANY locale column.
   const row = await probe(
     base,
     key,
     `or=(slug.eq.${slug},slug_es.eq.${slug},slug_de.eq.${slug},slug_pt.eq.${slug})`,
   );
-  if (!row) return null;
+  if (!row) return { kind: "notFound" };
 
   // Destination = the winner when this row is a topic-duplicate, else itself.
   let dest = row;
@@ -91,22 +104,54 @@ async function resolveRedirect(req: NextRequest): Promise<string | null> {
     targetSlug = slugFor(dest, "en") ?? dest.slug;
   }
   if (!targetSlug) return null;
-
   if (targetLocale === locale && targetSlug === slug) return null;
-  return `/${targetLocale}/articles/${targetSlug}`;
+  return { kind: "redirect", to: `/${targetLocale}/articles/${targetSlug}` };
+}
+
+// Resolve a tag request: 301 a non-canonical tag spelling to its slug form.
+// Pure string work, no DB. (Tag pages are noindex, but consolidating duplicate
+// URLs is still correct.) Existence/empty 404s are left to the page.
+function resolveTag(locale: Loc, rawSegment: string): Action {
+  let decoded: string;
+  try {
+    decoded = decodeURIComponent(rawSegment);
+  } catch {
+    return null;
+  }
+  const canonical = slugifyTag(decoded);
+  if (canonical && canonical !== decoded) {
+    return { kind: "redirect", to: `/${locale}/tags/${canonical}` };
+  }
+  return null;
 }
 
 export default async function proxy(req: NextRequest) {
   try {
-    const to = await resolveRedirect(req);
-    if (to) {
+    const path = req.nextUrl.pathname;
+    let action: Action = null;
+
+    const a = ARTICLE_RE.exec(path);
+    if (a) {
+      action = await resolveArticle(a[1] as Loc, a[2]);
+    } else {
+      const t = TAG_RE.exec(path);
+      if (t) action = resolveTag(t[1] as Loc, t[2]);
+    }
+
+    if (action?.kind === "redirect") {
       const url = req.nextUrl.clone();
-      url.pathname = to;
+      url.pathname = action.to;
       url.search = "";
       return NextResponse.redirect(url, 308);
     }
+    if (action?.kind === "notFound") {
+      // Re-render the same path but force the 404 status the swallowed
+      // notFound() should have produced. The page renders the not-found UI;
+      // this just fixes the status so crawlers don't see a soft-404.
+      return NextResponse.rewrite(req.nextUrl, { status: 404 });
+    }
   } catch {
-    // Fail open: a redirect-lookup error must never take down the page.
+    // Fail open: a redirect/404 lookup error must never take down the page.
   }
   return intlMiddleware(req);
 }
