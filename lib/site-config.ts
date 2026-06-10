@@ -20,16 +20,21 @@ export function siteUrl(path: string): string {
 // translations list instead — this helper assumes one shared sub-path.
 //
 // `subPath` is the portion after the locale, e.g. "/articles" or "" for home.
+// `query` is an optional suffix (e.g. "?page=2") appended to every URL so a
+// paginated page can self-canonicalize instead of pointing at page 1. It's
+// applied uniformly to the canonical and every hreflang so the two never
+// disagree. Pass "" (default) for the unpaginated/base page.
 export function buildLocaleAlternates(
   locale: string,
   subPath: string,
+  query = "",
 ): { canonical: string; languages: Record<string, string> } {
   const languages: Record<string, string> = Object.fromEntries(
-    routing.locales.map((l) => [l, siteUrl(`/${l}${subPath}`)]),
+    routing.locales.map((l) => [l, `${siteUrl(`/${l}${subPath}`)}${query}`]),
   );
-  languages["x-default"] = siteUrl(`/${routing.defaultLocale}${subPath}`);
+  languages["x-default"] = `${siteUrl(`/${routing.defaultLocale}${subPath}`)}${query}`;
   return {
-    canonical: siteUrl(`/${locale}${subPath}`),
+    canonical: `${siteUrl(`/${locale}${subPath}`)}${query}`,
     languages,
   };
 }

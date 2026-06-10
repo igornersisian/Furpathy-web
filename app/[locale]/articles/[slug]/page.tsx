@@ -120,7 +120,9 @@ export default async function ArticlePage({
     getTranslationsFor(article.id),
   ]);
 
-  const jsonLd = {
+  const canonicalUrl = siteUrl(`/${locale}/articles/${article.slug}`);
+
+  const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: article.title,
@@ -129,7 +131,7 @@ export default async function ArticlePage({
     datePublished: article.createdAt,
     dateModified: article.publishedAt ?? article.createdAt,
     inLanguage: locale,
-    mainEntityOfPage: siteUrl(`/${locale}/articles/${article.slug}`),
+    mainEntityOfPage: canonicalUrl,
     author: { "@type": "Organization", name: "Furpathy" },
     publisher: {
       "@type": "Organization",
@@ -138,7 +140,21 @@ export default async function ArticlePage({
     },
   };
 
-  const canonicalUrl = siteUrl(`/${locale}/articles/${article.slug}`);
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: tNav("home"), item: siteUrl(`/${locale}`) },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: tNav("articles"),
+        item: siteUrl(`/${locale}/articles`),
+      },
+      { "@type": "ListItem", position: 3, name: article.title, item: canonicalUrl },
+    ],
+  };
+
   const toc = extractToc(article.content);
   const breadcrumbTags = article.tags.slice(0, 3).join(" · ");
 
@@ -255,7 +271,10 @@ export default async function ArticlePage({
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        // Escape `<` so a stray "</script>" in any field can't break out of the tag.
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([articleLd, breadcrumbLd]).replace(/</g, "\\u003c"),
+        }}
       />
     </article>
   );

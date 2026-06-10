@@ -13,16 +13,25 @@ export const revalidate = 600;
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(parseLocale(locale));
   const t = await getTranslations({ locale, namespace: "list" });
+  // Self-canonicalize paginated pages (?page=2 → canonical ?page=2) so deeper
+  // pages aren't collapsed into page 1. Search result pages (?q=) instead
+  // canonicalize to the base list to avoid indexing thin query permutations.
+  const { page: pageParam, q: qParam } = await searchParams;
+  const page = Math.max(1, Number.parseInt(pageParam ?? "1", 10) || 1);
+  const hasQuery = (qParam ?? "").trim().length > 0;
+  const pageQuery = page > 1 && !hasQuery ? `?page=${page}` : "";
   return {
     title: t("title"),
     description: t("intro"),
-    alternates: buildLocaleAlternates(locale, "/articles"),
+    alternates: buildLocaleAlternates(locale, "/articles", pageQuery),
   };
 }
 

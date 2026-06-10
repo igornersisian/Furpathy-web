@@ -147,6 +147,11 @@ export async function getLatest(locale: Locale, limit = 12): Promise<ArticleCard
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
     .is("canonical_id", null)
+    // Only rows that actually have a slug in this locale. Without this, an
+    // untranslated row is fetched then dropped in mapRow, under-filling the
+    // page (and skewing hasMore). The pipeline writes translations atomically,
+    // so a non-null locale slug implies its title+content are present too.
+    .not(col(locale, "slug"), "is", null)
     .order("published_at", { ascending: false, nullsFirst: false })
     .limit(limit)
     .returns<ArticleRow[]>();
@@ -168,6 +173,9 @@ export async function getAllPublished(
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
     .is("canonical_id", null)
+    // Only rows published in this locale (see getLatest) so the page fills and
+    // hasMore is accurate.
+    .not(col(locale, "slug"), "is", null)
     .order("published_at", { ascending: false, nullsFirst: false })
     .range(from, to);
 
@@ -278,6 +286,8 @@ export async function getRelated(
     .select(columnsFor(locale))
     .in("status", PUBLISHED_STATUSES)
     .is("canonical_id", null)
+    // Only related articles that exist in this locale (see getLatest).
+    .not(col(locale, "slug"), "is", null)
     .overlaps(col(locale, "tags"), tags)
     .neq("id", articleId)
     .order("published_at", { ascending: false, nullsFirst: false })

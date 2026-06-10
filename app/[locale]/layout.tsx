@@ -92,6 +92,38 @@ export default async function LocaleLayout({
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   const tA11y = await getTranslations({ locale, namespace: "a11y" });
+  const tSite = await getTranslations({ locale, namespace: "site" });
+
+  // Site-wide Organization + WebSite graph. The WebSite SearchAction advertises
+  // the on-site search (/articles?q=) so Google can offer a sitelinks search box.
+  const siteLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${SITE_URL}#org`,
+        name: tSite("name"),
+        url: SITE_URL,
+        logo: siteUrl("/furpathy-logo.png"),
+      },
+      {
+        "@type": "WebSite",
+        "@id": `${SITE_URL}#website`,
+        url: siteUrl(`/${locale}`),
+        name: tSite("name"),
+        inLanguage: locale,
+        publisher: { "@id": `${SITE_URL}#org` },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: {
+            "@type": "EntryPoint",
+            urlTemplate: `${siteUrl(`/${locale}/articles`)}?q={search_term_string}`,
+          },
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ],
+  };
 
   return (
     <html
@@ -109,6 +141,10 @@ export default async function LocaleLayout({
           src="https://umami.deploybox.space/script.js"
           data-website-id="fe0720dc-8fc1-43a3-916d-2fd0f79d911a"
           strategy="afterInteractive"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteLd).replace(/</g, "\\u003c") }}
         />
         <NextIntlClientProvider>
           <a
