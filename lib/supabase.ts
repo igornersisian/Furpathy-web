@@ -43,9 +43,17 @@ export async function fetchWithRetry(
   const maxAttempts = deps.maxAttempts ?? 7;
   const random = deps.random ?? Math.random;
   let lastError: unknown;
+  // Bypass Next.js fetch cache. supabase-js calls `global.fetch`, which Next.js
+  // patches in App Router and may cache responses during ISR builds (especially
+  // with the Docker BuildKit `.next/cache` mount preserving fetch-cache between
+  // deploys). A stale cached response that pre-dated the `canonical_id` column
+  // caused the redirect logic to silently fail at build time. Page-level ISR
+  // (`export const revalidate = 600`) still caches rendered output — this only
+  // forces the underlying data layer to always re-fetch.
+  const noStoreInit: RequestInit = { ...(init ?? {}), cache: "no-store" };
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const res = await fetchImpl(input, init);
+      const res = await fetchImpl(input, noStoreInit);
       const retryable =
         res.status >= 500 || res.status === 429 || res.status === 408 || res.status === 0;
       if (retryable) {
